@@ -145,6 +145,44 @@ export function PersonBars({
   );
 }
 
+export function CumulativeArea({
+  data,
+}: {
+  data: { label: string; cumulative: number }[];
+}) {
+  if (data.length === 0) return <EmptyChart text="Sem histórico ainda" />;
+  return (
+    <ResponsiveContainer width="100%" height={240}>
+      <AreaChart data={data} margin={{ top: 8, right: 8, left: 8, bottom: 0 }}>
+        <defs>
+          <linearGradient id="gCumulative" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stopColor="hsl(var(--primary))" stopOpacity={0.35} />
+            <stop offset="100%" stopColor="hsl(var(--primary))" stopOpacity={0} />
+          </linearGradient>
+        </defs>
+        <XAxis dataKey="label" tick={axisStyle} axisLine={false} tickLine={false} minTickGap={16} />
+        <Tooltip
+          content={({ active, payload, label }) =>
+            active && payload?.length ? (
+              <TooltipBox
+                label={String(label)}
+                rows={[
+                  {
+                    name: "Acumulado",
+                    value: Number(payload[0]?.value ?? 0),
+                    color: "hsl(var(--primary))",
+                  },
+                ]}
+              />
+            ) : null
+          }
+        />
+        <Area type="monotone" dataKey="cumulative" stroke="hsl(var(--primary))" strokeWidth={2} fill="url(#gCumulative)" />
+      </AreaChart>
+    </ResponsiveContainer>
+  );
+}
+
 function EmptyChart({ text }: { text: string }) {
   return (
     <div className="flex h-[200px] items-center justify-center text-sm text-muted-foreground">

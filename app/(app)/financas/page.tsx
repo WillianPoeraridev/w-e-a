@@ -1,5 +1,4 @@
 import { ArrowDownCircle, ArrowUpCircle, Clock, Wallet } from "lucide-react";
-import { PageHeader } from "@/components/page-header";
 import { StatCard } from "@/components/stat-card";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { monthKeyOf, todaySP, type MonthKey } from "@/lib/dates";
@@ -71,10 +70,10 @@ export default async function FinancasPage({
 
   return (
     <>
-      <PageHeader title="Finanças" subtitle={overview.label}>
+      <div className="mb-4 flex flex-wrap items-center justify-end gap-2">
         <CategoryManager categories={categoriesLite} />
         <MonthSwitcher month={month} label={overview.label} />
-      </PageHeader>
+      </div>
 
       {/* Summary */}
       <div className="mb-4 grid grid-cols-2 gap-3 md:grid-cols-4">

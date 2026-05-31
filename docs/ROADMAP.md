@@ -33,7 +33,8 @@
 - [x] Visão mensal: entradas, saídas, sobra, a pagar
 - [x] **Divisão do casal** (quem deve quanto nos gastos compartilhados)
 - [x] Categorias (gerenciador com cor) · Metas de poupança com aporte/retirada
-- [x] Gráficos: gastos por categoria + evolução 6 meses · troca de mês
+- [x] Gráficos: gastos por categoria + evolução 6 meses · troca de mês (com seletor de mês/ano)
+- [x] Visão geral: aba anual (12 meses, totais, médias, taxa de poupança, categorias) + acumulado/patrimônio
 - [ ] ⬜ Orçamento por categoria (limite mensal + alerta ao estourar)
 - [ ] ⬜ Filtro da lista por pessoa/categoria/escopo
 - [ ] ⬜ Relatório do mês + exportar CSV

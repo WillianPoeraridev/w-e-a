@@ -7,6 +7,7 @@ import {
   transactions,
 } from "@/db/schema";
 import {
+  monthKeyOf,
   monthLabel,
   monthStart,
   nextMonthStart,
@@ -298,4 +299,192 @@ export async function getGeneratedBillIds(
       ),
     );
   return new Set(rows.map((r) => r.recurringBillId).filter(Boolean) as string[]);
+}
+
+const SHORT_MONTHS = [
+  "jan", "fev", "mar", "abr", "mai", "jun",
+  "jul", "ago", "set", "out", "nov", "dez",
+];
+
+export type YearMonthPoint = {
+  month: number;
+  label: string;
+  income: number;
+  expense: number;
+  balance: number;
+};
+
+export type YearOverview = {
+  year: number;
+  months: YearMonthPoint[];
+  income: number;
+  expense: number;
+  balance: number;
+  activeMonths: number;
+  avgIncome: number;
+  avgExpense: number;
+  avgBalance: number;
+  savingsRate: number;
+  byCategory: { id: string; name: string; color: string; total: number }[];
+};
+
+/** Full-year breakdown: 12 months + totals, averages, savings rate, categories. */
+export async function getYearOverview(
+  householdId: string,
+  year: number,
+): Promise<YearOverview> {
+  const rows = await db
+    .select({
+      date: transactions.date,
+      kind: transactions.kind,
+      amountCents: transactions.amountCents,
+      categoryId: transactions.categoryId,
+      categoryName: categories.name,
+      categoryColor: categories.color,
+    })
+    .from(transactions)
+    .leftJoin(categories, eq(transactions.categoryId, categories.id))
+    .where(
+      and(
+        eq(transactions.householdId, householdId),
+        gte(transactions.date, `${year}-01-01`),
+        lt(transactions.date, `${year + 1}-01-01`),
+      ),
+    );
+
+  const months: YearMonthPoint[] = SHORT_MONTHS.map((label, i) => {
+    const m = i + 1;
+    const monthRows = rows.filter((r) => Number(r.date.slice(5, 7)) === m);
+    const income = sumCents(
+      monthRows.filter((r) => r.kind === "income").map((r) => r.amountCents),
+    );
+    const expense = sumCents(
+      monthRows.filter((r) => r.kind === "expense").map((r) => r.amountCents),
+    );
+    return { month: m, label, income, expense, balance: income - expense };
+  });
+
+  const income = sumCents(months.map((m) => m.income));
+  const expense = sumCents(months.map((m) => m.expense));
+  const balance = income - expense;
+  const activeMonths = months.filter((m) => m.income > 0 || m.expense > 0).length;
+  const div = activeMonths || 1;
+
+  const catMap = new Map<string, { name: string; color: string; total: number }>();
+  for (const r of rows) {
+    if (r.kind !== "expense") continue;
+    const id = r.categoryId ?? "none";
+    const cur = catMap.get(id) ?? {
+      name: r.categoryName ?? "Sem categoria",
+      color: r.categoryColor ?? "#9ca3af",
+      total: 0,
+    };
+    cur.total += r.amountCents;
+    catMap.set(id, cur);
+  }
+  const byCategory = [...catMap.entries()]
+    .map(([id, v]) => ({ id, ...v }))
+    .sort((a, b) => b.total - a.total);
+
+  return {
+    year,
+    months,
+    income,
+    expense,
+    balance,
+    activeMonths,
+    avgIncome: Math.round(income / div),
+    avgExpense: Math.round(expense / div),
+    avgBalance: Math.round(balance / div),
+    savingsRate: income > 0 ? balance / income : 0,
+    byCategory,
+  };
+}
+
+export type AccumulatedPoint = {
+  month: MonthKey;
+  label: string;
+  balance: number;
+  cumulative: number;
+};
+
+export type AccumulatedOverview = {
+  points: AccumulatedPoint[];
+  allTimeIncome: number;
+  allTimeExpense: number;
+  allTimeBalance: number;
+  savedTotal: number;
+  savedTarget: number;
+};
+
+/** Long-term view: cumulative balance over time + all-time totals + savings. */
+export async function getAccumulated(
+  householdId: string,
+): Promise<AccumulatedOverview> {
+  const rows = await db
+    .select({
+      date: transactions.date,
+      kind: transactions.kind,
+      amountCents: transactions.amountCents,
+    })
+    .from(transactions)
+    .where(eq(transactions.householdId, householdId))
+    .orderBy(transactions.date);
+
+  const goals = await db
+    .select({
+      currentCents: savingsGoals.currentCents,
+      targetCents: savingsGoals.targetCents,
+    })
+    .from(savingsGoals)
+    .where(eq(savingsGoals.householdId, householdId));
+
+  const allTimeIncome = sumCents(
+    rows.filter((r) => r.kind === "income").map((r) => r.amountCents),
+  );
+  const allTimeExpense = sumCents(
+    rows.filter((r) => r.kind === "expense").map((r) => r.amountCents),
+  );
+
+  const points: AccumulatedPoint[] = [];
+  if (rows.length > 0) {
+    const byMonth = new Map<string, { income: number; expense: number }>();
+    for (const r of rows) {
+      const key = r.date.slice(0, 7);
+      const cur = byMonth.get(key) ?? { income: 0, expense: 0 };
+      if (r.kind === "income") cur.income += r.amountCents;
+      else cur.expense += r.amountCents;
+      byMonth.set(key, cur);
+    }
+    const firstMonth = rows[0].date.slice(0, 7);
+    const lastTxMonth = rows[rows.length - 1].date.slice(0, 7);
+    const current = monthKeyOf();
+    const endMonth = current > lastTxMonth ? current : lastTxMonth;
+
+    let cursor = firstMonth;
+    let cumulative = 0;
+    for (let i = 0; i < 600; i++) {
+      const mv = byMonth.get(cursor) ?? { income: 0, expense: 0 };
+      const balance = mv.income - mv.expense;
+      cumulative += balance;
+      const [yy, mm] = cursor.split("-");
+      points.push({
+        month: cursor,
+        label: `${SHORT_MONTHS[Number(mm) - 1]}/${yy.slice(2)}`,
+        balance,
+        cumulative,
+      });
+      if (cursor === endMonth) break;
+      cursor = shiftMonth(cursor, 1);
+    }
+  }
+
+  return {
+    points,
+    allTimeIncome,
+    allTimeExpense,
+    allTimeBalance: allTimeIncome - allTimeExpense,
+    savedTotal: sumCents(goals.map((g) => g.currentCents)),
+    savedTarget: sumCents(goals.map((g) => g.targetCents)),
+  };
 }
