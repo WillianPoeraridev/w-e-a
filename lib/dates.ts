@@ -1,6 +1,6 @@
 import { addMonths, format } from "date-fns";
 import { ptBR } from "date-fns/locale";
-import { formatInTimeZone } from "date-fns-tz";
+import { formatInTimeZone, fromZonedTime } from "date-fns-tz";
 
 /** All "wall clock" logic for the couple happens in São Paulo time. */
 export const TZ = "America/Sao_Paulo";
@@ -76,4 +76,34 @@ export function todayLongLabel(): string {
     locale: ptBR,
   });
   return label.charAt(0).toUpperCase() + label.slice(1);
+}
+
+// ── Instant ↔ SP wall-clock (for calendar events stored as UTC timestamps) ──
+
+/** Interpret an SP wall-clock string ("2026-06-15T14:30:00") as a UTC instant. */
+export function spWallToUtc(localIso: string): Date {
+  return fromZonedTime(localIso, TZ);
+}
+
+/** "HH:mm" of an instant in São Paulo. */
+export function formatTimeSP(date: Date): string {
+  return formatInTimeZone(date, TZ, "HH:mm");
+}
+
+/** "YYYY-MM-DD" calendar day of an instant in São Paulo. */
+export function dateKeySP(date: Date): string {
+  return formatInTimeZone(date, TZ, "yyyy-MM-dd");
+}
+
+/** UTC [start, end) bounds covering a whole SP month. */
+export function monthRangeUtc(key: MonthKey): { start: Date; end: Date } {
+  return {
+    start: fromZonedTime(`${key}-01T00:00:00`, TZ),
+    end: fromZonedTime(`${shiftMonth(key, 1)}-01T00:00:00`, TZ),
+  };
+}
+
+/** UTC instant for the start (00:00 SP) of a calendar day "YYYY-MM-DD". */
+export function dayStartUtc(dayKey: string): Date {
+  return fromZonedTime(`${dayKey}T00:00:00`, TZ);
 }

@@ -24,7 +24,7 @@ export type NavItem = {
 export const NAV: NavItem[] = [
   { href: "/", label: "Hoje", icon: Home, available: true, primary: true, description: "Seu dia em um olhar" },
   { href: "/financas", label: "Finanças", icon: Wallet, available: true, primary: true, description: "Orçamento do casal" },
-  { href: "/agenda", label: "Agenda", icon: CalendarDays, available: false, primary: true, description: "Calendário compartilhado" },
+  { href: "/agenda", label: "Agenda", icon: CalendarDays, available: true, primary: true, description: "Calendário compartilhado" },
   { href: "/metas", label: "Metas", icon: Target, available: false, description: "Os 3 pilares e objetivos" },
   { href: "/habitos", label: "Hábitos", icon: ListChecks, available: false, description: "Rotina diária" },
   { href: "/treino", label: "Treino", icon: Dumbbell, available: false, description: "Registro e progresso" },
