@@ -30,7 +30,7 @@ export const NAV: NavItem[] = [
   { href: "/treino", label: "Treino", icon: Dumbbell, available: true, description: "Registro e progresso" },
   { href: "/sono", label: "Sono", icon: Moon, available: true, description: "Qualidade e tendências" },
   { href: "/estudos", label: "Estudos", icon: BookOpen, available: true, description: "Trilhas e foco" },
-  { href: "/relacionamento", label: "Nós", icon: Heart, available: false, description: "Check-ins e gratidão" },
+  { href: "/relacionamento", label: "Nós", icon: Heart, available: true, description: "Check-ins e gratidão" },
 ];
 
 export const PRIMARY_NAV = NAV.filter((n) => n.primary);

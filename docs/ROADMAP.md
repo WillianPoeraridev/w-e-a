@@ -73,7 +73,7 @@
 - [x] Histórico editável (upsert por pessoa/dia) + toggle de pessoa
 - [ ] 💡 Correlação sono × treino × humor + "última noite" no dashboard
 
-## 🚧 Fase 4 — 📚 Estudos + 💜 Relacionamento
+## ✅ Fase 4 — 📚 Estudos + 💜 Relacionamento (CONCLUÍDA)
 **Estudos** ✅ *(no ar)*
 - [x] Trilhas de estudo (Willian Dev PJ + **Angélica do zero**) com progresso, status, link
 - [x] Sessões de estudo (tempo focado) + resumo da semana + **sequência (dias seguidos)**
@@ -81,11 +81,11 @@
 - [x] **Radar de tech**: salvar artigos/vídeos/novidades, marcar como lido, tags
 - [ ] ⬜ Roadmap guiado da Angélica (passo a passo) + pomodoro integrado
 
-**Relacionamento** *(schema pronto: `checkins`, `gratitude_notes`, `date_ideas`, `important_dates`)*
-- [ ] ⬜ Check-in do casal (humor, gratidão, destaque, o que melhorar)
-- [ ] ⬜ Mural de gratidão entre vocês dois
-- [ ] ⬜ Backlog de **date ideas** (marcar como feito)
-- [ ] ⬜ Datas importantes (aniversário de namoro, etc.) com lembrete
+**Relacionamento** ✅ *(no ar)*
+- [x] Check-in do casal (humor 😄, gratidão, destaque, o que melhorar)
+- [x] Mural de gratidão entre vocês dois (composer rápido)
+- [x] Backlog de **date ideas** (categoria, custo, marcar como feito)
+- [x] Datas especiais com **contagem regressiva** (aniversário de namoro, niveres) + "X anos"
 
 ## 🚧 Fase 5 — 🎯 Metas/OKR + Revisão semanal
 **Metas** ✅ *(no ar)*
