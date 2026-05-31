@@ -6,6 +6,11 @@ export const habitSchema = z.object({
   target: z.number().int().min(1).max(50),
   ownerUserId: z.string().nullable(),
   scope: z.enum(["personal", "shared"]),
+  timeOfDay: z
+    .string()
+    .regex(/^\d{2}:\d{2}$/)
+    .nullable(),
+  icon: z.string().trim().max(8).nullable(),
 });
 
 export type HabitInput = z.infer<typeof habitSchema>;

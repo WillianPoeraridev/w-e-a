@@ -56,6 +56,7 @@
 **Hábitos** ✅ *(tracker no ar)*
 - [x] Hábitos diários por pessoa/casa (água, treino, leitura, código…), cor e meta (Nx/dia)
 - [x] Check do dia (toca pra marcar/incrementar), **streak 🔥** e tirinha dos últimos 7 dias (editável)
+- [x] Horário + emoji por hábito · agrupado por período (manhã/tarde/noite) · recorde + fogo animado
 - [x] Resumo "X de Y concluídos hoje" + cálculo de streak testado
 - [ ] ⬜ Cadência semanal (Nx/semana) + anel de progresso no dashboard "Hoje"
 

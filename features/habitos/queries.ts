@@ -9,6 +9,7 @@ export type HabitWithStats = {
   name: string;
   color: string;
   icon: string | null;
+  timeOfDay: string | null;
   target: number;
   cadence: "daily" | "weekly";
   ownerUserId: string | null;
@@ -49,6 +50,7 @@ export async function getHabitsWithStats(
     name: h.name,
     color: h.color,
     icon: h.icon,
+    timeOfDay: h.timeOfDay,
     target: h.targetPerPeriod,
     cadence: h.cadence,
     ownerUserId: h.ownerUserId,

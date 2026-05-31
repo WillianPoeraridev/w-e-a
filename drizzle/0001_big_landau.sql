@@ -1,0 +1,1 @@
+ALTER TABLE "habits" ADD COLUMN "time_of_day" text;

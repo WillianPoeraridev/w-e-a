@@ -77,7 +77,17 @@ export function HabitForm({
       <form onSubmit={onSubmit} className="flex flex-col gap-4">
         <div className="flex flex-col gap-1.5">
           <Label htmlFor="name">Hábito</Label>
-          <Input id="name" name="name" placeholder="Ex: Beber água, treinar, ler…" defaultValue={initial?.name ?? ""} required autoFocus />
+          <div className="flex gap-2">
+            <input
+              name="icon"
+              maxLength={4}
+              placeholder="🙂"
+              defaultValue={initial?.icon ?? ""}
+              aria-label="Emoji"
+              className="h-10 w-12 shrink-0 rounded-md border border-input bg-card text-center text-lg shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+            />
+            <Input id="name" name="name" placeholder="Ex: Beber água, treinar, ler…" defaultValue={initial?.name ?? ""} required autoFocus />
+          </div>
         </div>
 
         <div className="flex flex-col gap-1.5">
@@ -100,10 +110,14 @@ export function HabitForm({
           </div>
         </div>
 
-        <div className="grid grid-cols-2 gap-3">
+        <div className="grid grid-cols-3 gap-3">
           <div className="flex flex-col gap-1.5">
-            <Label htmlFor="target">Vezes por dia</Label>
+            <Label htmlFor="target">Vezes/dia</Label>
             <Input id="target" name="target" type="number" min={1} max={50} defaultValue={initial?.target ?? 1} required />
+          </div>
+          <div className="flex flex-col gap-1.5">
+            <Label htmlFor="timeOfDay">Horário</Label>
+            <Input id="timeOfDay" name="timeOfDay" type="time" defaultValue={initial?.timeOfDay ?? ""} />
           </div>
           <div className="flex flex-col gap-1.5">
             <Label htmlFor="color">Cor</Label>

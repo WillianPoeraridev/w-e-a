@@ -16,6 +16,8 @@ export const habits = pgTable("habits", {
   name: text("name").notNull(),
   icon: text("icon"),
   color: text("color").notNull().default("#6366f1"),
+  /** Optional time of day to do it, "HH:mm" (SP wall clock). */
+  timeOfDay: text("time_of_day"),
   cadence: text("cadence").$type<"daily" | "weekly">().notNull().default("daily"),
   targetPerPeriod: integer("target_per_period").notNull().default(1),
   active: boolean("active").notNull().default(true),

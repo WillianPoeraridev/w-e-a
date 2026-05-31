@@ -21,6 +21,8 @@ function parse(form: FormData): HabitInput {
     target: Number(form.get("target") ?? 1),
     ownerUserId: str(form, "ownerUserId"),
     scope: str(form, "scope") ?? "shared",
+    timeOfDay: str(form, "timeOfDay"),
+    icon: str(form, "icon"),
   });
 }
 
@@ -38,6 +40,8 @@ export async function createHabit(form: FormData) {
     scope: input.scope,
     name: input.name,
     color: input.color,
+    icon: input.icon,
+    timeOfDay: input.timeOfDay,
     cadence: "daily",
     targetPerPeriod: input.target,
   });
@@ -56,6 +60,8 @@ export async function updateHabit(form: FormData) {
       scope: input.scope,
       name: input.name,
       color: input.color,
+      icon: input.icon,
+      timeOfDay: input.timeOfDay,
       targetPerPeriod: input.target,
     })
     .where(and(eq(habits.id, id), eq(habits.householdId, ctx.householdId)));

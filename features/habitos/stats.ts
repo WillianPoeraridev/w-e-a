@@ -1,19 +1,20 @@
 import { addDaysKey } from "@/lib/dates";
 
-const WD = ["D", "S", "T", "Q", "Q", "S", "S"];
+const WD = ["dom", "seg", "ter", "qua", "qui", "sex", "sáb"];
 
 export type DayCell = {
   key: string;
   count: number;
   done: boolean;
   isToday: boolean;
-  wd: string; // single-letter weekday
+  wd: string; // 3-letter weekday
 };
 
 export type HabitStats = {
   todayCount: number;
   todayDone: boolean;
   streak: number;
+  bestStreak: number;
   last7: DayCell[];
   doneCount7: number;
 };
@@ -21,7 +22,8 @@ export type HabitStats = {
 /**
  * Per-habit stats from a date→count map. "Done" on a day means count >= target.
  * Streak = consecutive done days ending today (or yesterday, so it doesn't read
- * as broken just because today hasn't been checked yet).
+ * as broken just because today hasn't been checked yet). bestStreak = the longest
+ * consecutive run ever recorded.
  */
 export function computeHabitStats(
   countByDate: Map<string, number>,
@@ -52,10 +54,25 @@ export function computeHabitStats(
     cursor = addDaysKey(cursor, -1);
   }
 
+  // Longest consecutive run of done days, ever.
+  const doneDays = [...countByDate.entries()]
+    .filter(([, c]) => c >= t)
+    .map(([k]) => k)
+    .sort();
+  let bestStreak = 0;
+  let run = 0;
+  let prev: string | null = null;
+  for (const k of doneDays) {
+    run = prev && addDaysKey(prev, 1) === k ? run + 1 : 1;
+    if (run > bestStreak) bestStreak = run;
+    prev = k;
+  }
+
   return {
     todayCount: get(today),
     todayDone: get(today) >= t,
     streak,
+    bestStreak,
     last7,
     doneCount7: last7.filter((c) => c.done).length,
   };
