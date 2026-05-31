@@ -108,37 +108,49 @@ input[type="number"].no-spin {
   -moz-appearance: textfield;
 }
 
-/* Live flame for habit streaks — flickers and glows like a real fire. */
+/* Live flame for habit streaks — wavers and glows like a real fire (no bouncing).
+   Anchored at the base; stretches up (scaleY), narrows (scaleX), the tip sways
+   (skewX) and the glow flickers. Irregular stops keep it organic, not bouncy. */
 @keyframes flame-flicker {
-  0%,
+  0% {
+    transform: scaleY(1) scaleX(1) skewX(0deg);
+    filter: drop-shadow(0 0 4px rgba(249, 115, 22, 0.6)) brightness(1);
+  }
+  14% {
+    transform: scaleY(1.09) scaleX(0.97) skewX(-2deg);
+    filter: drop-shadow(0 0 6px rgba(249, 146, 60, 0.85)) brightness(1.12);
+  }
+  28% {
+    transform: scaleY(0.97) scaleX(1.03) skewX(1.5deg);
+    filter: drop-shadow(0 0 3px rgba(234, 88, 12, 0.55)) brightness(0.96);
+  }
+  43% {
+    transform: scaleY(1.12) scaleX(0.95) skewX(2.5deg);
+    filter: drop-shadow(0 0 7px rgba(249, 146, 60, 0.9)) brightness(1.14);
+  }
+  58% {
+    transform: scaleY(1) scaleX(1) skewX(-1deg);
+    filter: drop-shadow(0 0 4px rgba(249, 115, 22, 0.65)) brightness(1.02);
+  }
+  72% {
+    transform: scaleY(1.07) scaleX(0.98) skewX(-2.5deg);
+    filter: drop-shadow(0 0 6px rgba(234, 88, 12, 0.78)) brightness(1.08);
+  }
+  86% {
+    transform: scaleY(0.98) scaleX(1.02) skewX(1deg);
+    filter: drop-shadow(0 0 3px rgba(249, 115, 22, 0.5)) brightness(0.98);
+  }
   100% {
-    transform: scale(1) rotate(-1.5deg);
-    opacity: 1;
-  }
-  20% {
-    transform: scale(1.14) translateY(-1px) rotate(2deg);
-    opacity: 0.92;
-  }
-  40% {
-    transform: scale(0.94) rotate(-2.5deg);
-    opacity: 1;
-  }
-  60% {
-    transform: scale(1.12) translateY(-1.5px) rotate(2.5deg);
-    opacity: 0.95;
-  }
-  80% {
-    transform: scale(1.02) rotate(-1deg);
-    opacity: 1;
+    transform: scaleY(1) scaleX(1) skewX(0deg);
+    filter: drop-shadow(0 0 4px rgba(249, 115, 22, 0.6)) brightness(1);
   }
 }
 
 .animate-flame {
-  transform-origin: center bottom;
-  /* Always animate: it's a decorative streak flame the owner explicitly wants
-     moving, even when the OS requests reduced motion. */
-  animation: flame-flicker 0.8s ease-in-out infinite !important;
-  filter: drop-shadow(0 0 5px rgba(249, 115, 22, 0.75))
-    drop-shadow(0 0 2px rgba(234, 88, 12, 0.55));
-  will-change: transform;
+  /* base of the flame stays put; it rises and sways from there */
+  transform-origin: 50% 90%;
+  /* Always animate: a decorative streak flame the owner explicitly wants alive,
+     even when the OS requests reduced motion. */
+  animation: flame-flicker 1.5s ease-in-out infinite !important;
+  will-change: transform, filter;
 }
