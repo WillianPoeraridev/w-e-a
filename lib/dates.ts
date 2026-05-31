@@ -69,6 +69,12 @@ export function formatDayShort(isoDate: string): string {
   return format(new Date(y, m - 1, d), "dd MMM", { locale: ptBR });
 }
 
+/** Shift a "YYYY-MM-DD" day key by n days (handles month/year overflow). */
+export function addDaysKey(dayKey: string, n: number): string {
+  const [y, m, d] = dayKey.split("-").map(Number);
+  return format(new Date(y, m - 1, d + n), "yyyy-MM-dd");
+}
+
 /** Long, capitalized label for today in SP: "Sexta-feira, 30 de maio". */
 export function todayLongLabel(): string {
   const [y, m, d] = todaySP().split("-").map(Number);

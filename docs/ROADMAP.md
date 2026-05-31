@@ -43,7 +43,7 @@
 
 ---
 
-## 🚧 Fase 2 — 📅 Agenda + ✅ Hábitos
+## ✅ Fase 2 — 📅 Agenda + ✅ Hábitos (CONCLUÍDA)
 **Agenda** ✅ *(calendário no ar)*
 - [x] Calendário compartilhado (grade do mês), eventos pessoais e do casal, cor por pessoa
 - [x] Criar/editar/excluir evento, dia inteiro ou horário, local e notas, painel do dia
@@ -53,10 +53,11 @@
 - [ ] ⬜ "Próximos eventos" também no dashboard "Hoje"
 - [ ] 💡 Sincronizar **Google Calendar** (tenho acesso via MCP) — 2 vias
 
-**Hábitos** *(schema pronto: `habits`, `habit_logs`)*
-- [ ] ⬜ Hábitos diários/semanais por pessoa (treino, água, leitura, código…)
-- [ ] ⬜ Check do dia + streak (sequência) + meta por período
-- [ ] ⬜ Anel de progresso do dia no dashboard "Hoje"
+**Hábitos** ✅ *(tracker no ar)*
+- [x] Hábitos diários por pessoa/casa (água, treino, leitura, código…), cor e meta (Nx/dia)
+- [x] Check do dia (toca pra marcar/incrementar), **streak 🔥** e tirinha dos últimos 7 dias (editável)
+- [x] Resumo "X de Y concluídos hoje" + cálculo de streak testado
+- [ ] ⬜ Cadência semanal (Nx/semana) + anel de progresso no dashboard "Hoje"
 
 ## ⬜ Fase 3 — 🏋️ Treino + 😴 Sono
 **Treino** *(schema pronto: `workouts`, `workout_sets`)*
@@ -104,8 +105,9 @@
 ---
 
 ## 👉 Agora / Próximo / Depois
-- **Agora:** usar o módulo Finanças no dia a dia + fazer o deploy na Vercel.
-- **Próximo (escolher 1):** Agenda+Hábitos · ou · Estudos (trilha da Angélica).
-- **Depois:** Treino+Sono → Relacionamento → Metas/Revisão semanal.
+- **Feito:** Fundação · Finanças (mês + visão geral) · Agenda (com feriados) · Hábitos.
+- **Agora:** usar no dia a dia + **deploy na Vercel** (pra cair no celular dos dois).
+- **Próximo (escolher 1):** Treino+Sono · ou · Estudos (trilha da Angélica) · ou · Metas.
+- **Depois:** Relacionamento → Metas/Revisão semanal → notificações.
 
 > Dica: a cada sessão, escolhemos **um** módulo e entregamos ele redondo. Sem pressa, bem feito. 💪
