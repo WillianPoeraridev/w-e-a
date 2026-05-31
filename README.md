@@ -6,6 +6,8 @@ relacionamento** em um só lugar. Completo no fluxo, simples na profundidade.
 > **Hoje (v1):** fundação completa + módulo **Finanças 100% funcional**. Os outros
 > módulos já têm o banco de dados modelado e nascem nas próximas sessões.
 
+📍 **[Roadmap completo do projeto → `docs/ROADMAP.md`](docs/ROADMAP.md)** — o que já existe e o que falta, fase por fase.
+
 ## Stack
 
 - **Next.js 16** (App Router, React 19, TypeScript strict)
