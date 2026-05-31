@@ -37,7 +37,7 @@ export function monthStart(key: MonthKey): string {
 /** First day of the NEXT month as "YYYY-MM-DD" (exclusive upper bound). */
 export function nextMonthStart(key: MonthKey): string {
   const { year, month } = parseMonthKey(key);
-  const d = new Date(Date.UTC(year, month - 1, 1));
+  const d = new Date(year, month - 1, 1);
   const next = addMonths(d, 1);
   return format(next, "yyyy-MM-dd");
 }
@@ -45,14 +45,14 @@ export function nextMonthStart(key: MonthKey): string {
 /** Shift a month key by n months: ("2026-05", -1) -> "2026-04". */
 export function shiftMonth(key: MonthKey, n: number): MonthKey {
   const { year, month } = parseMonthKey(key);
-  const d = new Date(Date.UTC(year, month - 1, 1));
+  const d = new Date(year, month - 1, 1);
   return format(addMonths(d, n), "yyyy-MM");
 }
 
 /** Human label for a month key: "2026-05" -> "Maio de 2026". */
 export function monthLabel(key: MonthKey): string {
   const { year, month } = parseMonthKey(key);
-  const d = new Date(Date.UTC(year, month - 1, 1));
+  const d = new Date(year, month - 1, 1);
   const label = format(d, "MMMM 'de' yyyy", { locale: ptBR });
   return label.charAt(0).toUpperCase() + label.slice(1);
 }
@@ -60,19 +60,19 @@ export function monthLabel(key: MonthKey): string {
 /** Format a "YYYY-MM-DD" date string as "dd/MM/yyyy". */
 export function formatDateBR(isoDate: string): string {
   const [y, m, d] = isoDate.split("-").map(Number);
-  return format(new Date(Date.UTC(y, m - 1, d)), "dd/MM/yyyy");
+  return format(new Date(y, m - 1, d), "dd/MM/yyyy");
 }
 
 /** Short day label: "2026-05-30" -> "30 mai". */
 export function formatDayShort(isoDate: string): string {
   const [y, m, d] = isoDate.split("-").map(Number);
-  return format(new Date(Date.UTC(y, m - 1, d)), "dd MMM", { locale: ptBR });
+  return format(new Date(y, m - 1, d), "dd MMM", { locale: ptBR });
 }
 
 /** Long, capitalized label for today in SP: "Sexta-feira, 30 de maio". */
 export function todayLongLabel(): string {
   const [y, m, d] = todaySP().split("-").map(Number);
-  const label = format(new Date(Date.UTC(y, m - 1, d)), "EEEE, d 'de' MMMM", {
+  const label = format(new Date(y, m - 1, d), "EEEE, d 'de' MMMM", {
     locale: ptBR,
   });
   return label.charAt(0).toUpperCase() + label.slice(1);

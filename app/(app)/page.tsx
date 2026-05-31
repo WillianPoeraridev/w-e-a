@@ -24,6 +24,9 @@ import { cn } from "@/lib/utils";
 
 export const metadata = { title: "Hoje" };
 
+// "Hoje" depende da data atual — sempre renderizar fresco, nunca cachear.
+export const dynamic = "force-dynamic";
+
 function greeting() {
   const h = hourSP();
   if (h < 6) return "Boa madrugada";
