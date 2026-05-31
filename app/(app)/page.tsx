@@ -53,7 +53,7 @@ export default async function TodayPage() {
         <h1 className="mt-1 text-2xl font-semibold tracking-tight">
           {greeting()}, {ctx.me.displayName} 👋
         </h1>
-        <p className="mt-2 max-w-md text-sm text-muted-foreground">
+        <p className="mt-2 text-sm text-muted-foreground">
           Construindo a vida de vocês dois, degrau por degrau. Hoje é mais um
           passo. 💪
         </p>
