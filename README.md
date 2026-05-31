@@ -57,7 +57,7 @@ relacionamento** em um só lugar. Completo no fluxo, simples na profundidade.
 
 ## Deploy na Vercel
 
-1. Suba o repo no GitHub e importe na Vercel. **Root Directory: `wea`**.
+1. Suba o repo no GitHub e importe na Vercel. **Root Directory: a raiz do repo** (padrão).
 2. Variáveis de ambiente (Production + Preview):
    - `DATABASE_URL` — string do Neon (Pooled)
    - `BETTER_AUTH_SECRET` — `node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"`
