@@ -72,12 +72,13 @@
 - [ ] ⬜ Tendência semanal/mensal + média
 - [ ] 💡 Correlação sono × treino × humor
 
-## ⬜ Fase 4 — 📚 Estudos + 💜 Relacionamento
-**Estudos** *(schema pronto: `study_tracks`, `study_sessions`, `tech_feed`)*
-- [ ] ⬜ Trilhas de estudo (Willian Dev PJ + **Angélica do zero**) com progresso
-- [ ] ⬜ Sessões/pomodoro com tempo focado por dia/semana
-- [ ] ⬜ **Roadmap de programação da Angélica** (passo a passo guiado)
-- [ ] 💡 Feed de updates de tech/mercado (via WebSearch) salvável
+## 🚧 Fase 4 — 📚 Estudos + 💜 Relacionamento
+**Estudos** ✅ *(no ar)*
+- [x] Trilhas de estudo (Willian Dev PJ + **Angélica do zero**) com progresso, status, link
+- [x] Sessões de estudo (tempo focado) + resumo da semana + **sequência (dias seguidos)**
+- [x] Tempo estudado por trilha + "Estudar agora" + sessões recentes
+- [x] **Radar de tech**: salvar artigos/vídeos/novidades, marcar como lido, tags
+- [ ] ⬜ Roadmap guiado da Angélica (passo a passo) + pomodoro integrado
 
 **Relacionamento** *(schema pronto: `checkins`, `gratitude_notes`, `date_ideas`, `important_dates`)*
 - [ ] ⬜ Check-in do casal (humor, gratidão, destaque, o que melhorar)

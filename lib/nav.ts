@@ -29,7 +29,7 @@ export const NAV: NavItem[] = [
   { href: "/habitos", label: "Hábitos", icon: ListChecks, available: true, primary: true, description: "Rotina diária" },
   { href: "/treino", label: "Treino", icon: Dumbbell, available: true, description: "Registro e progresso" },
   { href: "/sono", label: "Sono", icon: Moon, available: false, description: "Qualidade e tendências" },
-  { href: "/estudos", label: "Estudos", icon: BookOpen, available: false, description: "Trilhas e foco" },
+  { href: "/estudos", label: "Estudos", icon: BookOpen, available: true, description: "Trilhas e foco" },
   { href: "/relacionamento", label: "Nós", icon: Heart, available: false, description: "Check-ins e gratidão" },
 ];
 
