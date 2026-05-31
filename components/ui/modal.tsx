@@ -4,7 +4,15 @@ import { X } from "lucide-react";
 import * as React from "react";
 import { cn } from "@/lib/utils";
 
-/** Minimal accessible modal: backdrop click + Escape to close, scroll lock. */
+/**
+ * Minimal accessible modal: Escape + intentional backdrop click to close, scroll lock.
+ *
+ * The backdrop only closes when the press BOTH started and ended on the backdrop
+ * itself. This kills the classic "modal closes by itself" bug where you start a
+ * drag/selection inside (or interact with a native <select>/date picker) and the
+ * pointer is released over the backdrop — which would otherwise fire a click on it.
+ * Every modal in the app goes through this component, so the guard is the default.
+ */
 export function Modal({
   open,
   onClose,
@@ -20,6 +28,9 @@ export function Modal({
   children: React.ReactNode;
   className?: string;
 }) {
+  // Was the pointer pressed down directly on the backdrop (not on the dialog)?
+  const pressedOnBackdrop = React.useRef(false);
+
   React.useEffect(() => {
     if (!open) return;
     const onKey = (e: KeyboardEvent) => e.key === "Escape" && onClose();
@@ -36,7 +47,15 @@ export function Modal({
   return (
     <div
       className="fixed inset-0 z-50 flex items-end justify-center bg-black/50 p-0 backdrop-blur-sm sm:items-center sm:p-4"
-      onClick={onClose}
+      onPointerDown={(e) => {
+        pressedOnBackdrop.current = e.target === e.currentTarget;
+      }}
+      onClick={(e) => {
+        if (e.target === e.currentTarget && pressedOnBackdrop.current) {
+          onClose();
+        }
+        pressedOnBackdrop.current = false;
+      }}
     >
       <div
         role="dialog"
@@ -46,9 +65,9 @@ export function Modal({
           "max-h-[92dvh] overflow-y-auto",
           className,
         )}
-        onClick={(e) => e.stopPropagation()}
       >
         <button
+          type="button"
           onClick={onClose}
           aria-label="Fechar"
           className="absolute right-4 top-4 rounded-md p-1 text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
