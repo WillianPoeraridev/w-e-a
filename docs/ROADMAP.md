@@ -48,6 +48,7 @@
 - [x] Calendário compartilhado (grade do mês), eventos pessoais e do casal, cor por pessoa
 - [x] Criar/editar/excluir evento, dia inteiro ou horário, local e notas, painel do dia
 - [x] "Próximos eventos" + navegação de mês + fuso SP correto (round-trip testado)
+- [x] Feriados nacionais do Brasil automáticos (fixos + móveis: Carnaval, Sexta-feira Santa, Corpus Christi)
 - [ ] ⬜ Visão semana/dia + arrastar pra remarcar
 - [ ] ⬜ "Próximos eventos" também no dashboard "Hoje"
 - [ ] 💡 Sincronizar **Google Calendar** (tenho acesso via MCP) — 2 vias

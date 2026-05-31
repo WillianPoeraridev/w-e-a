@@ -1,6 +1,7 @@
 import { PageHeader } from "@/components/page-header";
 import { buildMonthGrid } from "@/features/agenda/calendar";
 import { AgendaView } from "@/features/agenda/components/agenda-view";
+import { holidaysInMonth } from "@/features/agenda/holidays";
 import { getMonthEvents, getUpcomingEvents } from "@/features/agenda/queries";
 import { monthKeyOf, monthLabel, todaySP, type MonthKey } from "@/lib/dates";
 import { requireHousehold } from "@/lib/household";
@@ -44,6 +45,7 @@ export default async function AgendaPage({
         events={events}
         upcoming={upcoming}
         members={members}
+        holidays={holidaysInMonth(month)}
         today={todaySP()}
       />
     </>

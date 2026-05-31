@@ -2,7 +2,7 @@
 
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
-import { ChevronLeft, ChevronRight, Pencil, Plus, Trash2 } from "lucide-react";
+import { ChevronLeft, ChevronRight, Flag, Pencil, Plus, Trash2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useMemo, useState } from "react";
 import { Button } from "@/components/ui/button";
@@ -11,6 +11,7 @@ import { formatDayShort, monthKeyOf, shiftMonth } from "@/lib/dates";
 import { cn } from "@/lib/utils";
 import { deleteEvent } from "../actions";
 import { WEEKDAYS, type GridDay } from "../calendar";
+import type { Holiday } from "../holidays";
 import type { EventLite } from "../queries";
 import { EventForm, type EventMember } from "./event-form";
 
@@ -34,6 +35,7 @@ export function AgendaView({
   events,
   upcoming,
   members,
+  holidays,
   today,
 }: {
   monthKey: string;
@@ -42,6 +44,7 @@ export function AgendaView({
   events: EventLite[];
   upcoming: EventLite[];
   members: EventMember[];
+  holidays: Holiday[];
   today: string;
 }) {
   const router = useRouter();
@@ -60,6 +63,16 @@ export function AgendaView({
     for (const list of map.values()) list.sort(sortDayEvents);
     return map;
   }, [events]);
+
+  const holidaysByDay = useMemo(() => {
+    const map = new Map<string, string[]>();
+    for (const h of holidays) {
+      const list = map.get(h.key) ?? [];
+      list.push(h.name);
+      map.set(h.key, list);
+    }
+    return map;
+  }, [holidays]);
 
   const nameOf = (id: string | null) =>
     id ? members.find((m) => m.userId === id)?.displayName ?? "—" : "Casa";
@@ -89,6 +102,7 @@ export function AgendaView({
   };
 
   const dayEvents = dayKey ? byDay.get(dayKey) ?? [] : [];
+  const dayHolidays = dayKey ? holidaysByDay.get(dayKey) ?? [] : [];
 
   return (
     <div className="grid gap-5 lg:grid-cols-[1fr_300px]">
@@ -122,6 +136,7 @@ export function AgendaView({
           <div className="grid grid-cols-7">
             {gridDays.map((d) => {
               const evs = byDay.get(d.key) ?? [];
+              const hols = holidaysByDay.get(d.key) ?? [];
               return (
                 <button
                   key={d.key}
@@ -143,6 +158,16 @@ export function AgendaView({
                   </span>
 
                   <div className="hidden flex-col gap-1 sm:flex">
+                    {hols.map((name) => (
+                      <span
+                        key={name}
+                        title={name}
+                        className="flex items-center gap-1 truncate rounded bg-emerald-500/10 px-1 py-0.5 text-[11px] font-medium text-emerald-700 dark:text-emerald-400"
+                      >
+                        <Flag className="size-2.5 shrink-0" />
+                        <span className="truncate">{name}</span>
+                      </span>
+                    ))}
                     {evs.slice(0, 3).map((ev) => (
                       <span
                         key={ev.id}
@@ -165,6 +190,7 @@ export function AgendaView({
                   </div>
 
                   <div className="flex flex-wrap gap-0.5 sm:hidden">
+                    {hols.length > 0 && <span className="size-1.5 rounded-full bg-emerald-500" />}
                     {evs.slice(0, 4).map((ev) => (
                       <span key={ev.id} className="size-1.5 rounded-full" style={{ backgroundColor: ev.color }} />
                     ))}
@@ -221,6 +247,14 @@ export function AgendaView({
       {/* Day detail */}
       <Modal open={Boolean(dayKey)} onClose={() => setDayKey(null)} title={dayKey ? prettyDay(dayKey) : ""}>
         <div className="flex flex-col gap-3">
+          {dayHolidays.map((name) => (
+            <div
+              key={name}
+              className="flex items-center gap-2 rounded-lg bg-emerald-500/10 p-2.5 text-sm font-medium text-emerald-700 dark:text-emerald-400"
+            >
+              <Flag className="size-4 shrink-0" /> Feriado · {name}
+            </div>
+          ))}
           {dayEvents.length === 0 ? (
             <p className="py-2 text-sm text-muted-foreground">Nenhum evento neste dia.</p>
           ) : (
