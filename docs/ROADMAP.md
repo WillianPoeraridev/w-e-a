@@ -84,10 +84,11 @@
 - [ ] ⬜ Backlog de **date ideas** (marcar como feito)
 - [ ] ⬜ Datas importantes (aniversário de namoro, etc.) com lembrete
 
-## ⬜ Fase 5 — 🎯 Metas/OKR + Revisão semanal
-*(schema pronto: `goals`, `milestones`)*
-- [ ] ⬜ Metas amarradas aos **3 pilares**, com milestones "degrau por degrau"
-- [ ] ⬜ Progresso por meta + prazo
+## 🚧 Fase 5 — 🎯 Metas/OKR + Revisão semanal
+**Metas** ✅ *(no ar)*
+- [x] Metas amarradas aos **3 pilares** (Gestão · Relacionamento · Carreira), agrupadas
+- [x] **Etapas "degrau por degrau"** (marcáveis) → progresso automático; ou progresso manual
+- [x] Status (ativa/pausada/concluída), prazo com contagem de dias, de quem (pessoa/casa)
 - [ ] ⬜ **Revisão semanal**: finanças + hábitos + treino + estudos + relacionamento num só lugar
 - [ ] 💡 Metas que puxam dados dos outros módulos (ex: "guardar R$10k" lê a poupança)
 

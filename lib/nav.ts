@@ -25,7 +25,7 @@ export const NAV: NavItem[] = [
   { href: "/", label: "Hoje", icon: Home, available: true, primary: true, description: "Seu dia em um olhar" },
   { href: "/financas", label: "Finanças", icon: Wallet, available: true, primary: true, description: "Orçamento do casal" },
   { href: "/agenda", label: "Agenda", icon: CalendarDays, available: true, primary: true, description: "Calendário compartilhado" },
-  { href: "/metas", label: "Metas", icon: Target, available: false, description: "Os 3 pilares e objetivos" },
+  { href: "/metas", label: "Metas", icon: Target, available: true, description: "Os 3 pilares e objetivos" },
   { href: "/habitos", label: "Hábitos", icon: ListChecks, available: true, primary: true, description: "Rotina diária" },
   { href: "/treino", label: "Treino", icon: Dumbbell, available: false, description: "Registro e progresso" },
   { href: "/sono", label: "Sono", icon: Moon, available: false, description: "Qualidade e tendências" },
