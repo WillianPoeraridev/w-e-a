@@ -60,11 +60,12 @@
 - [x] Resumo "X de Y concluídos hoje" + cálculo de streak testado
 - [ ] ⬜ Cadência semanal (Nx/semana) + anel de progresso no dashboard "Hoje"
 
-## ⬜ Fase 3 — 🏋️ Treino + 😴 Sono
-**Treino** *(schema pronto: `workouts`, `workout_sets`)*
-- [ ] ⬜ Registrar treino (tipo, duração, exercícios, séries/reps/carga)
-- [ ] ⬜ Templates de treino reutilizáveis (A/B/C)
-- [ ] ⬜ Progressão por exercício (gráfico de carga/volume)
+## 🚧 Fase 3 — 🏋️ Treino + 😴 Sono
+**Treino** ✅ *(no ar)*
+- [x] Registrar treino (tipo, duração, exercícios com séries/reps/carga), por pessoa
+- [x] Feed dos treinos + resumo da semana (treinos · minutos)
+- [x] **Progressão por exercício** (gráfico de carga ao longo do tempo)
+- [ ] ⬜ Templates de treino reutilizáveis (A/B/C) + volume total
 
 **Sono** *(schema pronto: `sleep_logs`)*
 - [ ] ⬜ Log de sono (deitou/acordou, duração, qualidade 1–5)
