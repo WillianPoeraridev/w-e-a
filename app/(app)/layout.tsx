@@ -37,8 +37,8 @@ export default async function AppLayout({
         </header>
 
         <main className="flex-1 px-4 pb-24 pt-4 md:px-8 md:pb-10 md:pt-8">
-          {/* Full-width content (capped only on ultra-wide screens for readability) */}
-          <div className="w-full 2xl:mx-auto 2xl:max-w-[1800px]">{children}</div>
+          {/* Wide content with a comfortable cap so it doesn't over-stretch. */}
+          <div className="mx-auto w-full max-w-[1440px]">{children}</div>
         </main>
       </div>
 
