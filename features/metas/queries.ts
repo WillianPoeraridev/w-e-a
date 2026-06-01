@@ -1,11 +1,8 @@
 import { asc, eq, inArray } from "drizzle-orm";
 import { db } from "@/db";
 import { goals, milestones } from "@/db/schema";
-import {
-  computeLinkedProgress,
-  getMetricContext,
-  metricLabel,
-} from "./metrics";
+import { getMetricContext } from "./metric-context";
+import { computeLinkedProgress, metricLabel } from "./metrics";
 import type { PillarKey } from "./pillars";
 
 export type MilestoneLite = {
