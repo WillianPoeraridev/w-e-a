@@ -9,6 +9,7 @@ import {
   gratitudeNotes,
   importantDates,
 } from "@/db/schema";
+import { aiEnabled, gemini } from "@/lib/ai";
 import { todaySP } from "@/lib/dates";
 import { requireHousehold } from "@/lib/household";
 import { parseBRLToCents } from "@/lib/money";
@@ -139,4 +140,41 @@ export async function deleteImportantDate(id: string) {
     .delete(importantDates)
     .where(and(eq(importantDates.id, id), eq(importantDates.householdId, ctx.householdId)));
   revalidateRel();
+}
+
+// ── Sugestões de date por IA ─────────────────────────────────────────────────
+
+export type DateSuggestion = { title: string; category: string; cost: string };
+
+export async function suggestDateIdeas(): Promise<{
+  enabled: boolean;
+  ideas: DateSuggestion[];
+}> {
+  await requireHousehold();
+  if (!aiEnabled()) return { enabled: false, ideas: [] };
+
+  const prompt =
+    'Sugira 5 ideias de date (encontro a dois) variadas e criativas para um casal no Brasil, com orçamentos diferentes (de grátis até ~R$200). Responda APENAS com um array JSON válido, sem texto fora dele, no formato: [{"title":"...","category":"casa|passeio|comida|cultura|aventura","cost":"0,00"}]. O cost em reais como string pt-BR (ex: "45,00").';
+  const raw = await gemini(prompt, { temperature: 0.9, maxTokens: 500 });
+  if (!raw) return { enabled: true, ideas: [] };
+
+  try {
+    const cleaned = raw.replace(/```json|```/g, "").trim();
+    const json = JSON.parse(cleaned) as unknown;
+    if (!Array.isArray(json)) return { enabled: true, ideas: [] };
+    const ideas: DateSuggestion[] = json
+      .slice(0, 6)
+      .map((x) => {
+        const o = x as Record<string, unknown>;
+        return {
+          title: String(o.title ?? "").slice(0, 120),
+          category: String(o.category ?? "").slice(0, 40),
+          cost: String(o.cost ?? "").slice(0, 20),
+        };
+      })
+      .filter((i) => i.title);
+    return { enabled: true, ideas };
+  } catch {
+    return { enabled: true, ideas: [] };
+  }
 }

@@ -8,8 +8,10 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Modal } from "@/components/ui/modal";
 import { Select } from "@/components/ui/select";
+import { parseBRLToCents } from "@/lib/money";
 import { cn } from "@/lib/utils";
 import { createGoal, deleteGoal, updateGoal } from "../actions";
+import { LINKED_METRICS } from "../metrics";
 import { PILLARS } from "../pillars";
 import type { GoalWithMilestones } from "../queries";
 
@@ -25,17 +27,28 @@ export function GoalForm({
   open,
   onClose,
   members,
+  habits,
   initial,
 }: {
   open: boolean;
   onClose: () => void;
   members: GoalMember[];
+  habits: { id: string; title: string }[];
   initial?: GoalWithMilestones | null;
 }) {
   const router = useRouter();
   const editing = Boolean(initial);
   const [target, setTarget] = useState<string>(initial?.ownerUserId ?? "casa");
   const [status, setStatus] = useState<string>(initial?.status ?? "active");
+  const [metric, setMetric] = useState<string>(initial?.linkedMetric ?? "");
+  const [metricTarget, setMetricTarget] = useState<string>(
+    initial?.targetValue == null
+      ? ""
+      : initial.linkedMetric === "savings_total"
+        ? String(initial.targetValue / 100)
+        : String(initial.targetValue),
+  );
+  const [habitRef, setHabitRef] = useState<string>(initial?.linkedRef ?? "");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -53,6 +66,18 @@ export function GoalForm({
     fd.set("ownerUserId", own.ownerUserId);
     fd.set("scope", own.scope);
     fd.set("status", status);
+    fd.set("linkedMetric", metric);
+    if (metric) {
+      const tv =
+        metric === "savings_total"
+          ? parseBRLToCents(metricTarget) ?? 0
+          : Math.round(Number(metricTarget) || 0);
+      fd.set("targetValue", String(tv));
+      fd.set("linkedRef", metric === "habit_streak" ? habitRef : "");
+    } else {
+      fd.set("targetValue", "");
+      fd.set("linkedRef", "");
+    }
     try {
       if (editing && initial) {
         fd.set("id", initial.id);
@@ -157,10 +182,48 @@ export function GoalForm({
           </div>
         </div>
 
+        {/* Métrica ligada — interliga a meta com outro módulo (progresso automático) */}
         <div className="flex flex-col gap-1.5">
-          <Label htmlFor="progress">Progresso: ignorado se a meta tiver etapas</Label>
-          <Input id="progress" name="progress" type="number" min={0} max={100} defaultValue={initial?.manualProgress ?? 0} />
+          <Label htmlFor="linkedMetric">Ligar a um módulo (progresso automático)</Label>
+          <Select id="linkedMetric" value={metric} onChange={(e) => setMetric(e.target.value)}>
+            <option value="">Nenhuma — progresso manual/etapas</option>
+            {LINKED_METRICS.map((m) => (
+              <option key={m.key} value={m.key}>{m.label}</option>
+            ))}
+          </Select>
         </div>
+
+        {metric ? (
+          <div className="grid grid-cols-2 gap-3">
+            <div className="flex flex-col gap-1.5">
+              <Label htmlFor="metricTarget">Alvo</Label>
+              <Input
+                id="metricTarget"
+                inputMode={metric === "savings_total" ? "decimal" : "numeric"}
+                value={metricTarget}
+                onChange={(e) => setMetricTarget(e.target.value)}
+                placeholder={metric === "savings_total" ? "10.000,00" : "3"}
+                required
+              />
+            </div>
+            {metric === "habit_streak" && (
+              <div className="flex flex-col gap-1.5">
+                <Label htmlFor="linkedRef">Hábito</Label>
+                <Select id="linkedRef" value={habitRef} onChange={(e) => setHabitRef(e.target.value)}>
+                  <option value="">Escolha…</option>
+                  {habits.map((h) => (
+                    <option key={h.id} value={h.id}>{h.title}</option>
+                  ))}
+                </Select>
+              </div>
+            )}
+          </div>
+        ) : (
+          <div className="flex flex-col gap-1.5">
+            <Label htmlFor="progress">Progresso: ignorado se a meta tiver etapas</Label>
+            <Input id="progress" name="progress" type="number" min={0} max={100} defaultValue={initial?.manualProgress ?? 0} />
+          </div>
+        )}
 
         {error && (
           <p className="rounded-md bg-destructive/10 px-3 py-2 text-sm text-destructive">{error}</p>

@@ -50,10 +50,12 @@ const STATUS_BADGE = {
 export function GoalsView({
   goals,
   members,
+  habits,
   today,
 }: {
   goals: GoalWithMilestones[];
   members: GoalMember[];
+  habits: { id: string; title: string }[];
   today: string;
 }) {
   const router = useRouter();
@@ -160,7 +162,7 @@ export function GoalsView({
         </div>
       )}
 
-      <GoalForm open={formOpen} onClose={() => setFormOpen(false)} members={members} initial={formInitial} />
+      <GoalForm open={formOpen} onClose={() => setFormOpen(false)} members={members} habits={habits} initial={formInitial} />
     </div>
   );
 }
@@ -232,8 +234,11 @@ function GoalCard({
       {/* Progress */}
       <div className="mt-3">
         <div className="mb-1 flex items-center justify-between text-xs">
-          <span className="tabular-nums text-muted-foreground">
-            {goal.total > 0 ? `${goal.doneCount}/${goal.total} etapas` : "progresso"}
+          <span className="flex items-center gap-1.5 tabular-nums text-muted-foreground">
+            {goal.isAuto && (
+              <span className="inline-flex items-center gap-0.5 rounded bg-primary/10 px-1 py-px text-[10px] font-medium text-primary">🔗 auto</span>
+            )}
+            {goal.isAuto ? goal.autoLabel : goal.total > 0 ? `${goal.doneCount}/${goal.total} etapas` : "progresso"}
           </span>
           <span className="font-semibold tabular-nums">{goal.progress}%</span>
         </div>

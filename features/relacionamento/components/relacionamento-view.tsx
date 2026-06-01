@@ -31,35 +31,14 @@ import type {
   GratitudeLite,
   ImportantDateLite,
 } from "../queries";
+import { countdownLabel, occurrence } from "../dates";
 import { CheckinForm } from "./checkin-form";
 import { DateIdeaForm } from "./dateidea-form";
+import { DateSuggestions } from "./date-suggestions";
 import { ImportantDateForm } from "./importantdate-form";
 
 const MOODS = ["", "😞", "😕", "😐", "🙂", "😄"];
 const KIND_ICON = { anniversary: Heart, birthday: Gift, other: Sparkles };
-
-function diffDays(a: string, b: string): number {
-  const [ay, am, ad] = a.split("-").map(Number);
-  const [by, bm, bd] = b.split("-").map(Number);
-  return Math.round((Date.UTC(ay, am - 1, ad) - Date.UTC(by, bm - 1, bd)) / 86400000);
-}
-
-function occurrence(d: ImportantDateLite, today: string) {
-  if (!d.recurring) return { key: d.date, days: diffDays(d.date, today), years: 0 };
-  const [oy, om, od] = d.date.split("-").map(Number);
-  const ty = Number(today.slice(0, 4));
-  const pad = (n: number) => String(n).padStart(2, "0");
-  let cand = `${ty}-${pad(om)}-${pad(od)}`;
-  if (diffDays(cand, today) < 0) cand = `${ty + 1}-${pad(om)}-${pad(od)}`;
-  return { key: cand, days: diffDays(cand, today), years: Number(cand.slice(0, 4)) - oy };
-}
-
-function countdownLabel(days: number): string {
-  if (days === 0) return "hoje! 🎉";
-  if (days === 1) return "amanhã";
-  if (days > 0) return `em ${days} dias`;
-  return "passou";
-}
 
 export function RelacionamentoView({
   checkins,
@@ -95,7 +74,7 @@ export function RelacionamentoView({
     id ? members.find((m) => m.userId === id)?.displayName ?? "—" : "Casa";
 
   const sortedDates = importantDates
-    .map((d) => ({ d, occ: occurrence(d, today) }))
+    .map((d) => ({ d, occ: occurrence(d.date, d.recurring, today) }))
     .sort((a, b) => {
       const ak = a.occ.days >= 0 ? a.occ.days : 1e9 - a.occ.days;
       const bk = b.occ.days >= 0 ? b.occ.days : 1e9 - b.occ.days;
@@ -203,9 +182,12 @@ export function RelacionamentoView({
             <CardTitle className="flex items-center gap-2">
               <Sparkles className="size-4 text-brand-2" /> Ideias de date
             </CardTitle>
-            <Button size="sm" variant="outline" onClick={() => setIdeaOpen(true)}>
-              <Plus /> Ideia
-            </Button>
+            <div className="flex items-center gap-1">
+              <DateSuggestions />
+              <Button size="sm" variant="outline" onClick={() => setIdeaOpen(true)}>
+                <Plus /> Ideia
+              </Button>
+            </div>
           </CardHeader>
           <CardContent className="pt-0">
             {dateIdeas.length === 0 ? (

@@ -12,6 +12,11 @@ export const goalSchema = z.object({
     .regex(/^\d{4}-\d{2}-\d{2}$/)
     .nullable(),
   progress: z.number().int().min(0).max(100),
+  linkedMetric: z
+    .enum(["savings_total", "workouts_week", "study_week_min", "habit_streak"])
+    .nullable(),
+  targetValue: z.number().int().min(0).nullable(),
+  linkedRef: z.string().nullable(),
 });
 export type GoalInput = z.infer<typeof goalSchema>;
 

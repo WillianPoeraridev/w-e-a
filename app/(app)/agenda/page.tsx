@@ -1,8 +1,8 @@
 import { PageHeader } from "@/components/page-header";
 import { buildMonthGrid } from "@/features/agenda/calendar";
 import { AgendaView } from "@/features/agenda/components/agenda-view";
-import { holidaysInMonth } from "@/features/agenda/holidays";
 import { getMonthEvents, getUpcomingEvents } from "@/features/agenda/queries";
+import { getCalendarItems } from "@/features/calendar/aggregate";
 import { monthKeyOf, monthLabel, todaySP, type MonthKey } from "@/lib/dates";
 import { requireHousehold } from "@/lib/household";
 
@@ -24,9 +24,10 @@ export default async function AgendaPage({
   const { m } = await searchParams;
   const month = resolveMonth(m);
 
-  const [events, upcoming] = await Promise.all([
+  const [events, upcoming, items] = await Promise.all([
     getMonthEvents(ctx.householdId, month),
     getUpcomingEvents(ctx.householdId, 6),
+    getCalendarItems(ctx.householdId, month),
   ]);
 
   const members = ctx.members.map((mm) => ({
@@ -43,9 +44,9 @@ export default async function AgendaPage({
         label={monthLabel(month)}
         gridDays={buildMonthGrid(month)}
         events={events}
+        items={items}
         upcoming={upcoming}
         members={members}
-        holidays={holidaysInMonth(month)}
         today={todaySP()}
       />
     </>

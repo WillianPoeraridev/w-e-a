@@ -24,6 +24,9 @@ function parse(form: FormData): GoalInput {
     scope: str(form, "scope") ?? "shared",
     targetDate: str(form, "targetDate"),
     progress: Number(form.get("progress") ?? 0),
+    linkedMetric: str(form, "linkedMetric"),
+    targetValue: form.get("targetValue") ? Number(form.get("targetValue")) : null,
+    linkedRef: str(form, "linkedRef"),
   });
 }
 
@@ -55,6 +58,9 @@ export async function createGoal(form: FormData) {
     status: input.status,
     progress: input.progress,
     targetDate: input.targetDate,
+    linkedMetric: input.linkedMetric,
+    targetValue: input.targetValue,
+    linkedRef: input.linkedRef,
   });
   revalidateMetas();
 }
@@ -75,6 +81,9 @@ export async function updateGoal(form: FormData) {
       status: input.status,
       progress: input.progress,
       targetDate: input.targetDate,
+      linkedMetric: input.linkedMetric,
+      targetValue: input.targetValue,
+      linkedRef: input.linkedRef,
     })
     .where(and(eq(goals.id, id), eq(goals.householdId, ctx.householdId)));
   revalidateMetas();

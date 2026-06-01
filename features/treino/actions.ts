@@ -4,6 +4,7 @@ import { and, eq } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 import { db } from "@/db";
 import { workoutSets, workouts } from "@/db/schema";
+import { markHabitsByKeyword } from "@/features/habitos/auto";
 import { requireHousehold } from "@/lib/household";
 import {
   exercisesSchema,
@@ -89,6 +90,8 @@ export async function createWorkout(form: FormData) {
     .returning({ id: workouts.id });
 
   await insertSets(row.id, exercises);
+  // Cross-module: auto-complete a "treinar" habit for that day.
+  await markHabitsByKeyword(ctx.householdId, input.ownerUserId || null, input.date, ["trein"]);
   revalidateTreino();
 }
 

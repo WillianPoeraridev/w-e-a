@@ -1,6 +1,11 @@
-import { and, asc, eq, inArray } from "drizzle-orm";
+import { asc, eq, inArray } from "drizzle-orm";
 import { db } from "@/db";
 import { goals, milestones } from "@/db/schema";
+import {
+  computeLinkedProgress,
+  getMetricContext,
+  metricLabel,
+} from "./metrics";
 import type { PillarKey } from "./pillars";
 
 export type MilestoneLite = {
@@ -20,11 +25,17 @@ export type GoalWithMilestones = {
   scope: "personal" | "shared";
   targetDate: string | null;
   manualProgress: number;
-  /** Computed: from milestones when present, else the manual progress. */
+  /** Computed: linked metric (if set) > milestones > manual. */
   progress: number;
   milestones: MilestoneLite[];
   doneCount: number;
   total: number;
+  /** Live metric linkage (interligação com outros módulos). */
+  linkedMetric: string | null;
+  targetValue: number | null;
+  linkedRef: string | null;
+  isAuto: boolean;
+  autoLabel: string | null;
 };
 
 export async function getGoals(
@@ -55,6 +66,10 @@ export async function getGoals(
     byGoal.set(m.goalId, list);
   }
 
+  // Only pay the cross-module cost when at least one goal is linked.
+  const hasLinked = gs.some((g) => g.linkedMetric);
+  const metricCtx = hasLinked ? await getMetricContext(householdId) : null;
+
   return gs.map((g) => {
     const mil: MilestoneLite[] = (byGoal.get(g.id) ?? []).map((m) => ({
       id: m.id,
@@ -63,8 +78,16 @@ export async function getGoals(
       dueDate: m.dueDate,
     }));
     const doneCount = mil.filter((m) => m.done).length;
-    const progress =
+
+    let progress =
       mil.length > 0 ? Math.round((doneCount / mil.length) * 100) : g.progress;
+    let autoLabel: string | null = null;
+    const isAuto = Boolean(g.linkedMetric && metricCtx);
+    if (g.linkedMetric && metricCtx) {
+      progress = computeLinkedProgress(g.linkedMetric, g.targetValue ?? 0, g.linkedRef, metricCtx);
+      autoLabel = metricLabel(g.linkedMetric, g.targetValue ?? 0, g.linkedRef, metricCtx);
+    }
+
     return {
       id: g.id,
       title: g.title,
@@ -79,6 +102,11 @@ export async function getGoals(
       milestones: mil,
       doneCount,
       total: mil.length,
+      linkedMetric: g.linkedMetric,
+      targetValue: g.targetValue,
+      linkedRef: g.linkedRef,
+      isAuto,
+      autoLabel,
     };
   });
 }

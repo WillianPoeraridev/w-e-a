@@ -4,6 +4,7 @@ import { and, eq } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 import { db } from "@/db";
 import { studySessions, studyTracks, techFeed } from "@/db/schema";
+import { markHabitsByKeyword } from "@/features/habitos/auto";
 import { requireHousehold } from "@/lib/household";
 import {
   feedSchema,
@@ -89,6 +90,8 @@ export async function createSession(form: FormData) {
     scope: str(form, "scope") ?? "personal",
   });
   await db.insert(studySessions).values({ householdId: ctx.householdId, ...input });
+  // Cross-module: auto-complete an "estudar" habit for that day.
+  await markHabitsByKeyword(ctx.householdId, input.ownerUserId || null, input.date, ["estud"]);
   revalidateEstudos();
 }
 

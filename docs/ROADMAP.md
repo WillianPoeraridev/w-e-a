@@ -5,7 +5,19 @@
 
 **Legenda:** ✅ pronto · 🚧 em andamento · ⬜ a fazer · 💡 ideia futura
 
-**Última atualização:** 2026-05-31 · **Versão atual:** v1 (Fundação + Finanças)
+**Última atualização:** 2026-05-31 · **Versão atual:** v2 (8 módulos + IA + interligação)
+
+---
+
+## ✨ v2 — Interligação total + IA (CONCLUÍDA)
+- [x] **Motor de IA** grátis (Gemini free tier + fallback local, opcional via `GEMINI_API_KEY`)
+- [x] **Dashboard cockpit**: resumo do dia por IA, projeção financeira, hábitos marcáveis, widgets de todos os módulos
+- [x] **Assistente "Pergunte ao WeA"** — responde sobre os dados reais do casal
+- [x] **Revisão semanal** por IA (fecha a Fase 5) + **sugestões de date** por IA
+- [x] **Calendário unificado**: contas, treinos, estudos, sono, datas do casal, feriados e prazos de metas no mesmo mês (+ visão Semana, marcar conta paga)
+- [x] **Metas que leem dados reais** (poupança / treinos-semana / estudo-semana / streak de hábito) → progresso automático
+- [x] **Hábito auto-completa** ao registrar treino/estudo
+- [ ] ⬜ Deploy na Vercel (próximo passo)
 
 ---
 

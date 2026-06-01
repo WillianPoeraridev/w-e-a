@@ -20,6 +20,12 @@ export const goals = pgTable("goals", {
     .default("active"),
   progress: integer("progress").notNull().default(0),
   targetDate: date("target_date", { mode: "string" }),
+  /** Optional live metric that drives progress (see features/metas/metrics.ts). */
+  linkedMetric: text("linked_metric"),
+  /** Target value for the linked metric (cents / count / minutes / days). */
+  targetValue: integer("target_value"),
+  /** Extra reference for the metric (e.g. a habit id for habit_streak). */
+  linkedRef: text("linked_ref"),
   ...timestamps,
 });
 

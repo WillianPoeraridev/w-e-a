@@ -9,6 +9,9 @@ const schema = z.object({
   BETTER_AUTH_SECRET: z.string().min(16, "BETTER_AUTH_SECRET muito curto"),
   BETTER_AUTH_URL: z.string().url(),
   NEXT_PUBLIC_APP_URL: z.string().url(),
+  // Optional — enables the AI features (Google Gemini free tier). The app stays
+  // fully functional with a local fallback when this is absent.
+  GEMINI_API_KEY: z.string().min(1).optional(),
 });
 
 export const env = schema.parse({
@@ -16,4 +19,5 @@ export const env = schema.parse({
   BETTER_AUTH_SECRET: process.env.BETTER_AUTH_SECRET,
   BETTER_AUTH_URL: process.env.BETTER_AUTH_URL,
   NEXT_PUBLIC_APP_URL: process.env.NEXT_PUBLIC_APP_URL,
+  GEMINI_API_KEY: process.env.GEMINI_API_KEY,
 });
