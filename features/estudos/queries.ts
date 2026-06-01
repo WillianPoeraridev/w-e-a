@@ -1,6 +1,7 @@
 import { and, desc, eq } from "drizzle-orm";
 import { db } from "@/db";
 import { studySessions, studyTracks, techFeed } from "@/db/schema";
+import { cache } from "react";
 
 export type TrackStatus = "planned" | "in_progress" | "done";
 
@@ -57,7 +58,8 @@ export async function getStudyTracks(householdId: string): Promise<TrackLite[]> 
   }));
 }
 
-export async function getStudySessions(
+export const getStudySessions = cache(_getStudySessions);
+async function _getStudySessions(
   householdId: string,
 ): Promise<SessionLite[]> {
   const rows = await db

@@ -2,6 +2,7 @@ import { and, asc, eq } from "drizzle-orm";
 import { db } from "@/db";
 import { habitLogs, habits } from "@/db/schema";
 import { todaySP } from "@/lib/dates";
+import { cache } from "react";
 import { computeHabitStats, type HabitStats } from "./stats";
 
 export type HabitWithStats = {
@@ -17,7 +18,8 @@ export type HabitWithStats = {
   stats: HabitStats;
 };
 
-export async function getHabitsWithStats(
+export const getHabitsWithStats = cache(_getHabitsWithStats);
+async function _getHabitsWithStats(
   householdId: string,
 ): Promise<HabitWithStats[]> {
   const today = todaySP();

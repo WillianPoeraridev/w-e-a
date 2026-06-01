@@ -16,6 +16,7 @@ import {
 } from "@/lib/dates";
 import type { Member } from "@/lib/household";
 import { splitEqually, sumCents } from "@/lib/money";
+import { cache } from "react";
 
 export type TxRow = {
   id: string;
@@ -276,7 +277,8 @@ export async function getRecurringBills(householdId: string) {
     .orderBy(recurringBills.dueDay);
 }
 
-export async function getSavingsGoals(householdId: string) {
+export const getSavingsGoals = cache(_getSavingsGoals);
+async function _getSavingsGoals(householdId: string) {
   return db
     .select()
     .from(savingsGoals)

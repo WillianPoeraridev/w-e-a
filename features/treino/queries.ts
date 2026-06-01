@@ -1,5 +1,6 @@
 import { and, asc, desc, eq, inArray } from "drizzle-orm";
 import { db } from "@/db";
+import { cache } from "react";
 import { workoutSets, workouts } from "@/db/schema";
 import type { WorkoutKind } from "./lib";
 
@@ -23,7 +24,8 @@ export type WorkoutLite = {
   sets: SetLite[];
 };
 
-export async function getWorkouts(
+export const getWorkouts = cache(_getWorkouts);
+async function _getWorkouts(
   householdId: string,
 ): Promise<WorkoutLite[]> {
   const ws = await db
