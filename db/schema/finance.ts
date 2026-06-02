@@ -10,8 +10,10 @@ import { user } from "./auth";
 import { household, ownership } from "./core";
 import { timestamps, type Scope } from "./_shared";
 
-export const transactionKinds = ["income", "expense"] as const;
+export const transactionKinds = ["income", "expense", "settlement"] as const;
 export type TransactionKind = (typeof transactionKinds)[number];
+export const categoryKinds = ["income", "expense"] as const;
+export type CategoryKind = (typeof categoryKinds)[number];
 
 /** How a shared cost is divided between the couple. */
 export const splitKinds = ["none", "equal", "income"] as const;
@@ -23,7 +25,7 @@ export const categories = pgTable("categories", {
   householdId: uuid("household_id")
     .notNull()
     .references(() => household.id, { onDelete: "cascade" }),
-  kind: text("kind").$type<TransactionKind>().notNull(),
+  kind: text("kind").$type<CategoryKind>().notNull(),
   name: text("name").notNull(),
   color: text("color").notNull().default("#6366f1"),
   icon: text("icon"),

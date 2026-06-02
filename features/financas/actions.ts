@@ -9,6 +9,7 @@ import {
   savingsGoals,
   transactions,
 } from "@/db/schema";
+import { todaySP } from "@/lib/dates";
 import { requireHousehold } from "@/lib/household";
 import { parseBRLToCents } from "@/lib/money";
 import {
@@ -17,6 +18,7 @@ import {
   savingsGoalSchema,
   transactionSchema,
 } from "./schema";
+import { computeOverview, getMonthTransactions } from "./queries";
 
 function str(form: FormData, key: string): string | null {
   const v = form.get(key);
@@ -29,6 +31,12 @@ function amount(form: FormData, key = "amount"): number {
   const cents = parseBRLToCents(String(form.get(key) ?? ""));
   if (cents === null) throw new Error("Informe um valor válido.");
   return cents;
+}
+
+function cents(form: FormData, key: string): number {
+  const value = Number(form.get(key));
+  if (!Number.isInteger(value) || value <= 0) throw new Error("Valor inválido.");
+  return value;
 }
 
 function revalidateFinance() {
@@ -106,6 +114,40 @@ export async function toggleTransactionPaid(id: string, paid: boolean) {
         eq(transactions.householdId, ctx.householdId),
       ),
     );
+  revalidateFinance();
+}
+
+export async function createSplitSettlement(form: FormData) {
+  const ctx = await requireHousehold();
+  const month = str(form, "month");
+  const date = str(form, "date") ?? todaySP();
+  const fromUserId = str(form, "fromUserId");
+  const requestedAmount = str(form, "amount") ? amount(form, "amount") : cents(form, "amountCents");
+
+  if (!month || !/^\d{4}-\d{2}$/.test(month)) throw new Error("Mês inválido.");
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(date) || !date.startsWith(month)) {
+    throw new Error("Data inválida para o mês selecionado.");
+  }
+
+  const rows = await getMonthTransactions(ctx.householdId, month);
+  const overview = computeOverview(month, rows, ctx.members);
+  const settlement = overview.split.settlement;
+  if (!settlement || settlement.fromUserId !== fromUserId) {
+    throw new Error("Não há acerto pendente para registrar.");
+  }
+
+  const amountCents = Math.min(requestedAmount, settlement.amount);
+  await db.insert(transactions).values({
+    householdId: ctx.householdId,
+    date,
+    kind: "settlement",
+    amountCents,
+    categoryId: null,
+    payerUserId: settlement.fromUserId,
+    scope: "shared",
+    description: `Acerto do casal: ${settlement.fromName} -> ${settlement.toName}`,
+    paid: true,
+  });
   revalidateFinance();
 }
 

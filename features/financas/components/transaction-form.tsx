@@ -33,7 +33,8 @@ export function TransactionForm({
 }) {
   const router = useRouter();
   const editing = Boolean(initial);
-  const [kind, setKind] = useState<"income" | "expense">(initial?.kind ?? "expense");
+  const initialKind = initial?.kind === "income" || initial?.kind === "expense" ? initial.kind : "expense";
+  const [kind, setKind] = useState<"income" | "expense">(initialKind);
   const [scope, setScope] = useState<"personal" | "shared">(initial?.scope ?? "shared");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);

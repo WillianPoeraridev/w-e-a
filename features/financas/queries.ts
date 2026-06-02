@@ -21,7 +21,7 @@ import { cache } from "react";
 export type TxRow = {
   id: string;
   date: string;
-  kind: "income" | "expense";
+  kind: "income" | "expense" | "settlement";
   amountCents: number;
   scope: "personal" | "shared";
   description: string | null;
@@ -85,6 +85,7 @@ export type SplitMember = {
   name: string;
   color: string;
   paid: number;
+  settled: number;
   fairShare: number;
   balance: number; // paid - fairShare; positive => is owed
 };
@@ -93,7 +94,13 @@ export type CoupleSplit = {
   total: number;
   members: SplitMember[];
   /** Human settlement for the 2-person case, or null when even. */
-  settlement: { fromName: string; toName: string; amount: number } | null;
+  settlement: {
+    fromUserId: string;
+    fromName: string;
+    toUserId: string;
+    toName: string;
+    amount: number;
+  } | null;
 };
 
 export type MonthOverview = {
@@ -155,19 +162,22 @@ export function computeOverview(
 
   // Couple split: shared expenses divided equally; who paid vs fair share
   const shared = expenses.filter((r) => r.scope === "shared");
+  const settlements = rows.filter((r) => r.kind === "settlement" && r.scope === "shared");
   const sharedTotal = sumCents(shared.map((r) => r.amountCents));
   const fair = splitEqually(sharedTotal, Math.max(members.length, 1));
   const splitMembers: SplitMember[] = members.map((m, i) => {
     const paid = sumCents(
       shared.filter((r) => r.payerUserId === m.userId).map((r) => r.amountCents),
     );
+    const settled = settlementNetForMember(settlements, members, m.userId);
     return {
       userId: m.userId,
       name: m.displayName,
       color: m.color,
       paid,
+      settled,
       fairShare: fair[i] ?? 0,
-      balance: paid - (fair[i] ?? 0),
+      balance: paid - (fair[i] ?? 0) + settled,
     };
   });
 
@@ -178,7 +188,13 @@ export function computeOverview(
     const debtor = creditor === a ? b : a;
     const amount = Math.min(creditor.balance, -debtor.balance);
     if (amount > 0) {
-      settlement = { fromName: debtor.name, toName: creditor.name, amount };
+      settlement = {
+        fromUserId: debtor.userId,
+        fromName: debtor.name,
+        toUserId: creditor.userId,
+        toName: creditor.name,
+        amount,
+      };
     }
   }
 
@@ -204,6 +220,22 @@ export async function getMonthOverview(
 ): Promise<MonthOverview> {
   const rows = await getMonthTransactions(householdId, month);
   return computeOverview(month, rows, members);
+}
+
+function settlementNetForMember(rows: TxRow[], members: Member[], userId: string) {
+  if (members.length !== 2) return 0;
+  const partnerIds = members
+    .filter((m) => m.userId !== userId)
+    .map((m) => m.userId);
+  const paid = sumCents(
+    rows.filter((r) => r.payerUserId === userId).map((r) => r.amountCents),
+  );
+  const received = sumCents(
+    rows
+      .filter((r) => r.payerUserId !== null && partnerIds.includes(r.payerUserId))
+      .map((r) => r.amountCents),
+  );
+  return paid - received;
 }
 
 export type TrendPoint = {
@@ -455,7 +487,7 @@ export async function getAccumulated(
       const key = r.date.slice(0, 7);
       const cur = byMonth.get(key) ?? { income: 0, expense: 0 };
       if (r.kind === "income") cur.income += r.amountCents;
-      else cur.expense += r.amountCents;
+      else if (r.kind === "expense") cur.expense += r.amountCents;
       byMonth.set(key, cur);
     }
     const firstMonth = rows[0].date.slice(0, 7);

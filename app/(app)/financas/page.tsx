@@ -132,7 +132,7 @@ export default async function FinancasPage({
 
         {/* Right column */}
         <div className="space-y-4">
-          <CoupleSplitCard split={overview.split} />
+          <CoupleSplitCard split={overview.split} month={month} defaultDate={defaultDate} />
           <RecurringBillsCard
             bills={bills.map((b) => ({
               id: b.id,

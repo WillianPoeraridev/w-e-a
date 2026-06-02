@@ -1,6 +1,6 @@
 "use client";
 
-import { ArrowDownLeft, ArrowUpRight, Pencil, Plus, Trash2 } from "lucide-react";
+import { ArrowDownLeft, ArrowUpRight, HandCoins, Pencil, Plus, Trash2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { Badge } from "@/components/ui/badge";
@@ -76,21 +76,32 @@ export function TransactionsCard({
           <ul className="divide-y">
             {rows.map((tx) => {
               const income = tx.kind === "income";
+              const settlement = tx.kind === "settlement";
               return (
                 <li key={tx.id} className="flex items-center gap-3 py-3">
                   <span
                     className={cn(
                       "inline-flex size-9 shrink-0 items-center justify-center rounded-full",
-                      income ? "bg-success/12 text-success" : "bg-destructive/10 text-destructive",
+                      income
+                        ? "bg-success/12 text-success"
+                        : settlement
+                          ? "bg-primary/10 text-primary"
+                          : "bg-destructive/10 text-destructive",
                     )}
-                    style={tx.categoryColor ? { backgroundColor: `${tx.categoryColor}1f`, color: tx.categoryColor } : undefined}
+                    style={!settlement && tx.categoryColor ? { backgroundColor: `${tx.categoryColor}1f`, color: tx.categoryColor } : undefined}
                   >
-                    {income ? <ArrowDownLeft className="size-4" /> : <ArrowUpRight className="size-4" />}
+                    {income ? (
+                      <ArrowDownLeft className="size-4" />
+                    ) : settlement ? (
+                      <HandCoins className="size-4" />
+                    ) : (
+                      <ArrowUpRight className="size-4" />
+                    )}
                   </span>
 
                   <div className="min-w-0 flex-1">
                     <p className="truncate text-sm font-medium">
-                      {tx.description || tx.categoryName || (income ? "Entrada" : "Saída")}
+                      {tx.description || tx.categoryName || (income ? "Entrada" : settlement ? "Acerto" : "Saída")}
                     </p>
                     <p className="flex flex-wrap items-center gap-x-2 gap-y-0.5 text-xs text-muted-foreground">
                       <span>{formatDayShort(tx.date)}</span>
@@ -104,10 +115,10 @@ export function TransactionsCard({
                     <span
                       className={cn(
                         "text-sm font-semibold tabular-nums",
-                        income ? "text-success" : "text-foreground",
+                        income ? "text-success" : settlement ? "text-primary" : "text-foreground",
                       )}
                     >
-                      {income ? "+" : "−"}
+                      {income ? "+" : settlement ? "" : "−"}
                       {formatBRL(tx.amountCents)}
                     </span>
                     {tx.kind === "expense" && (
@@ -124,9 +135,11 @@ export function TransactionsCard({
                   </div>
 
                   <div className="flex shrink-0 items-center">
-                    <Button variant="ghost" size="icon" className="size-8" onClick={() => openEdit(tx)}>
-                      <Pencil className="size-3.5" />
-                    </Button>
+                    {!settlement && (
+                      <Button variant="ghost" size="icon" className="size-8" onClick={() => openEdit(tx)}>
+                        <Pencil className="size-3.5" />
+                      </Button>
+                    )}
                     <Button
                       variant="ghost"
                       size="icon"
