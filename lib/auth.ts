@@ -12,7 +12,9 @@ import { env } from "./env";
  */
 const trustedOrigins =
   process.env.NODE_ENV === "production"
-    ? [env.BETTER_AUTH_URL, env.NEXT_PUBLIC_APP_URL]
+    ? [env.BETTER_AUTH_URL, env.NEXT_PUBLIC_APP_URL].filter(
+        (s): s is string => Boolean(s),
+      )
     : [
         "http://localhost:3000",
         "http://localhost:3001",
