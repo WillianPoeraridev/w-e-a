@@ -272,6 +272,71 @@ export async function deleteRecurringBill(id: string) {
   revalidateFinance();
 }
 
+export async function updateRecurringBill(form: FormData) {
+  const ctx = await requireHousehold();
+  const id = str(form, "id");
+  if (!id) throw new Error("Conta fixa inválida.");
+  const input = recurringBillSchema.parse({
+    name: str(form, "name"),
+    amountCents: amount(form),
+    categoryId: str(form, "categoryId"),
+    dueDay: Number(form.get("dueDay") ?? 10),
+    payerUserId: str(form, "payerUserId"),
+    scope: str(form, "scope") ?? "shared",
+    splitKind: str(form, "splitKind") ?? "equal",
+  });
+
+  await db
+    .update(recurringBills)
+    .set(input)
+    .where(
+      and(
+        eq(recurringBills.id, id),
+        eq(recurringBills.householdId, ctx.householdId),
+      ),
+    );
+  revalidateFinance();
+}
+
+/**
+ * Exclui uma conta fixa SOMENTE após revalidar a senha do usuário logado.
+ * Espelha `confirmAndDeleteTransaction` para a mesma camada de segurança.
+ */
+export async function confirmAndDeleteRecurringBill(input: {
+  id: string;
+  password: string;
+}): Promise<{ ok: true } | { ok: false; error: string }> {
+  if (!input.id) return { ok: false, error: "Conta fixa inválida." };
+  if (!input.password || input.password.length < 8) {
+    return { ok: false, error: "Senha inválida." };
+  }
+
+  const session = await getSession();
+  if (!session) return { ok: false, error: "Sessão expirada. Faça login novamente." };
+  const email = session.user.email;
+
+  try {
+    await auth.api.signInEmail({
+      body: { email, password: input.password },
+      asResponse: false,
+    });
+  } catch {
+    return { ok: false, error: "Senha incorreta." };
+  }
+
+  const ctx = await requireHousehold();
+  await db
+    .delete(recurringBills)
+    .where(
+      and(
+        eq(recurringBills.id, input.id),
+        eq(recurringBills.householdId, ctx.householdId),
+      ),
+    );
+  revalidateFinance();
+  return { ok: true };
+}
+
 // ── Categories ───────────────────────────────────────────────────────────────
 
 export async function createCategory(form: FormData) {

@@ -141,11 +141,15 @@ export default async function FinancasPage({
               dueDay: b.dueDay,
               payerUserId: b.payerUserId,
               scope: b.scope,
+              splitKind: b.splitKind,
+              categoryId: b.categoryId,
               categoryColor: b.categoryColor,
             }))}
             generatedIds={[...generatedIds]}
             month={month}
             members={members}
+            categories={categoriesLite}
+            currentUserId={ctx.userId}
           />
           <SavingsGoalsCard
             goals={savings.map((g) => ({
