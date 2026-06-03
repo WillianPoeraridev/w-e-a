@@ -9,8 +9,9 @@ import {
   savingsGoals,
   transactions,
 } from "@/db/schema";
+import { auth } from "@/lib/auth";
 import { todaySP } from "@/lib/dates";
-import { requireHousehold } from "@/lib/household";
+import { getSession, requireHousehold } from "@/lib/household";
 import { parseBRLToCents } from "@/lib/money";
 import {
   categorySchema,
@@ -101,6 +102,49 @@ export async function deleteTransaction(id: string) {
       ),
     );
   revalidateFinance();
+}
+
+/**
+ * Exclui uma transação SOMENTE após revalidar a senha do usuário logado.
+ * A senha é checada no servidor via Better Auth, então a confirmação não
+ * é burlável pelo DevTools — e devolvemos `{ ok: false, error }` em vez de
+ * lançar para o cliente poder mostrar mensagem amigável no modal.
+ */
+export async function confirmAndDeleteTransaction(input: {
+  id: string;
+  password: string;
+}): Promise<{ ok: true } | { ok: false; error: string }> {
+  if (!input.id) return { ok: false, error: "Lançamento inválido." };
+  if (!input.password || input.password.length < 8) {
+    return { ok: false, error: "Senha inválida." };
+  }
+
+  const session = await getSession();
+  if (!session) return { ok: false, error: "Sessão expirada. Faça login novamente." };
+  const email = session.user.email;
+
+  // Verifica a senha re-autenticando o usuário atual. Se ela estiver errada,
+  // o Better Auth lança um erro — capturamos e devolvemos mensagem neutra.
+  try {
+    await auth.api.signInEmail({
+      body: { email, password: input.password },
+      asResponse: false,
+    });
+  } catch {
+    return { ok: false, error: "Senha incorreta." };
+  }
+
+  const ctx = await requireHousehold();
+  await db
+    .delete(transactions)
+    .where(
+      and(
+        eq(transactions.id, input.id),
+        eq(transactions.householdId, ctx.householdId),
+      ),
+    );
+  revalidateFinance();
+  return { ok: true };
 }
 
 export async function toggleTransactionPaid(id: string, paid: boolean) {

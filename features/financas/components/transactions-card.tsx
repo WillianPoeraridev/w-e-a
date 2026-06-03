@@ -9,8 +9,9 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { formatDayShort } from "@/lib/dates";
 import { formatBRL } from "@/lib/money";
 import { cn } from "@/lib/utils";
-import { deleteTransaction, toggleTransactionPaid } from "../actions";
+import { toggleTransactionPaid } from "../actions";
 import type { TxRow } from "../queries";
+import { ConfirmDeleteModal } from "./confirm-delete-modal";
 import { TransactionForm } from "./transaction-form";
 import type { CategoryLite, MemberLite } from "./types";
 
@@ -31,6 +32,7 @@ export function TransactionsCard({
   const [formOpen, setFormOpen] = useState(false);
   const [editing, setEditing] = useState<TxRow | null>(null);
   const [busy, setBusy] = useState<string | null>(null);
+  const [deleting, setDeleting] = useState<TxRow | null>(null);
 
   const nameOf = (userId: string | null) =>
     userId ? members.find((m) => m.userId === userId)?.displayName ?? "—" : "Casa";
@@ -43,13 +45,8 @@ export function TransactionsCard({
     setEditing(tx);
     setFormOpen(true);
   }
-
-  async function onDelete(id: string) {
-    if (!confirm("Excluir esta transação?")) return;
-    setBusy(id);
-    await deleteTransaction(id);
-    router.refresh();
-    setBusy(null);
+  function openDelete(tx: TxRow) {
+    setDeleting(tx);
   }
 
   async function onTogglePaid(tx: TxRow) {
@@ -144,8 +141,9 @@ export function TransactionsCard({
                       variant="ghost"
                       size="icon"
                       className="size-8 text-muted-foreground hover:text-destructive"
-                      onClick={() => onDelete(tx.id)}
-                      disabled={busy === tx.id}
+                      onClick={() => openDelete(tx)}
+                      disabled={busy === tx.id || (deleting?.id === tx.id)}
+                      title="Excluir (pede confirmação com senha)"
                     >
                       <Trash2 className="size-3.5" />
                     </Button>
@@ -165,6 +163,27 @@ export function TransactionsCard({
         currentUserId={currentUserId}
         defaultDate={defaultDate}
         initial={editing}
+      />
+
+      <ConfirmDeleteModal
+        // `key` muda a cada alvo, então o React remonta o componente e o
+        // estado interno (senha/erro) é reiniciado sem precisar de useEffect.
+        key={deleting?.id ?? "closed"}
+        open={deleting !== null}
+        txId={deleting?.id ?? null}
+        txDescription={
+          deleting
+            ? deleting.description ||
+              deleting.categoryName ||
+              (deleting.kind === "income"
+                ? "Entrada"
+                : deleting.kind === "settlement"
+                  ? "Acerto"
+                  : "Saída")
+            : ""
+        }
+        onClose={() => setDeleting(null)}
+        onDeleted={() => router.refresh()}
       />
     </Card>
   );
