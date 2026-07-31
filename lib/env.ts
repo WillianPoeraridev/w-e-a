@@ -28,12 +28,20 @@ const strictSchema = z.object({
 
 const permissiveSchema = strictSchema.partial();
 
+// Vercel and .env files commonly represent an unset optional value as an empty
+// string. Normalize it before Zod validation so one optional integration cannot
+// make every required runtime variable appear missing.
+function optionalEnv(value: string | undefined) {
+  const trimmed = value?.trim();
+  return trimmed ? trimmed : undefined;
+}
+
 const parsed = permissiveSchema.safeParse({
   DATABASE_URL: process.env.DATABASE_URL,
   BETTER_AUTH_SECRET: process.env.BETTER_AUTH_SECRET,
   BETTER_AUTH_URL: process.env.BETTER_AUTH_URL,
   NEXT_PUBLIC_APP_URL: process.env.NEXT_PUBLIC_APP_URL,
-  GEMINI_API_KEY: process.env.GEMINI_API_KEY,
+  GEMINI_API_KEY: optionalEnv(process.env.GEMINI_API_KEY),
 });
 
 /**
@@ -54,6 +62,6 @@ export function requireEnv() {
     BETTER_AUTH_SECRET: process.env.BETTER_AUTH_SECRET,
     BETTER_AUTH_URL: process.env.BETTER_AUTH_URL,
     NEXT_PUBLIC_APP_URL: process.env.NEXT_PUBLIC_APP_URL,
-    GEMINI_API_KEY: process.env.GEMINI_API_KEY,
+    GEMINI_API_KEY: optionalEnv(process.env.GEMINI_API_KEY),
   });
 }
