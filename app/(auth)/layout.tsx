@@ -1,5 +1,4 @@
 import { Heart } from "lucide-react";
-import { BrandMark } from "@/components/brand";
 
 export default function AuthLayout({
   children,
@@ -13,10 +12,6 @@ export default function AuthLayout({
 
       <main className="relative w-full max-w-md">
         <div className="mb-7 flex flex-col items-center text-center sm:mb-8">
-          <div className="mb-5 flex items-center gap-2.5 rounded-full border border-border/70 bg-card/70 px-3 py-2 shadow-sm backdrop-blur">
-            <BrandMark className="size-8 rounded-lg text-xs shadow-none" />
-            <span className="pr-1 text-sm font-semibold tracking-tight">WeA</span>
-          </div>
           <p className="mb-2 inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-[0.18em] text-brand">
             <Heart className="size-3.5 fill-current" aria-hidden="true" />
             Willian &amp; Angélica
