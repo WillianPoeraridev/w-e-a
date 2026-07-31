@@ -45,12 +45,26 @@ export function AuthForm({ mode }: { mode: "login" | "signup" }) {
       {mode === "signup" && (
         <div className="flex flex-col gap-1.5">
           <Label htmlFor="name">Seu nome</Label>
-          <Input id="name" name="name" placeholder="Como você quer ser chamado" required />
+          <Input
+            id="name"
+            name="name"
+            placeholder="Como você quer ser chamado"
+            required
+            className="h-11 border-border/80 bg-background/60 px-3.5"
+          />
         </div>
       )}
       <div className="flex flex-col gap-1.5">
         <Label htmlFor="email">E-mail</Label>
-        <Input id="email" name="email" type="email" placeholder="voce@email.com" autoComplete="email" required />
+        <Input
+          id="email"
+          name="email"
+          type="email"
+          placeholder="voce@email.com"
+          autoComplete="email"
+          required
+          className="h-11 border-border/80 bg-background/60 px-3.5"
+        />
       </div>
       <div className="flex flex-col gap-1.5">
         <Label htmlFor="password">Senha</Label>
@@ -63,7 +77,7 @@ export function AuthForm({ mode }: { mode: "login" | "signup" }) {
             autoComplete={mode === "signup" ? "new-password" : "current-password"}
             minLength={8}
             required
-            className="pr-10"
+            className="h-11 border-border/80 bg-background/60 px-3.5 pr-10"
           />
           <button
             type="button"
@@ -88,7 +102,7 @@ export function AuthForm({ mode }: { mode: "login" | "signup" }) {
         </p>
       )}
 
-      <Button type="submit" disabled={loading} className="mt-1">
+      <Button type="submit" disabled={loading} className="mt-2 h-11 rounded-lg shadow-md shadow-brand/20">
         {loading && <Loader2 className="animate-spin" />}
         {mode === "signup" ? "Criar conta" : "Entrar"}
       </Button>
