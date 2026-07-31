@@ -1,16 +1,15 @@
 "use client";
 
 import { CalendarDays, Clock, Dumbbell, Pencil, Plus, TrendingUp } from "lucide-react";
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import { StatCard } from "@/components/stat-card";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Select } from "@/components/ui/select";
 import { addDaysKey, formatDayShort } from "@/lib/dates";
 import { KIND_MAP } from "../kinds";
-import { formatKg, kgFromGrams } from "../lib";
+import { formatKg } from "../lib";
 import type { SetLite, WorkoutLite } from "../queries";
-import { ProgressChart } from "./progress-chart";
+import { ProgressionCoach } from "./progression-coach";
 import { WorkoutForm, type WorkoutMember } from "./workout-form";
 
 function setLabel(s: SetLite): string {
@@ -35,7 +34,6 @@ export function TreinoView({
 }) {
   const [formOpen, setFormOpen] = useState(false);
   const [formInitial, setFormInitial] = useState<WorkoutLite | null>(null);
-  const [selectedEx, setSelectedEx] = useState("");
 
   const nameOf = (id: string | null) =>
     id ? members.find((m) => m.userId === id)?.displayName ?? "—" : "Casa";
@@ -45,27 +43,6 @@ export function TreinoView({
   const weekStart = addDaysKey(today, -new Date(ty, tm - 1, td).getDay());
   const week = workouts.filter((w) => w.date >= weekStart && w.date <= today);
   const weekMin = week.reduce((a, w) => a + (w.durationMin ?? 0), 0);
-
-  const exercises = useMemo(() => {
-    const freq = new Map<string, number>();
-    for (const w of workouts)
-      for (const s of w.sets) freq.set(s.exercise, (freq.get(s.exercise) ?? 0) + 1);
-    return [...freq.entries()].sort((a, b) => b[1] - a[1]).map(([n]) => n);
-  }, [workouts]);
-
-  const exercise = selectedEx || exercises[0] || "";
-
-  const series = useMemo(() => {
-    if (!exercise) return [];
-    const points: { label: string; kg: number }[] = [];
-    for (const w of [...workouts].reverse()) {
-      const matching = w.sets.filter((s) => s.exercise === exercise && s.weightGrams != null);
-      if (matching.length === 0) continue;
-      const maxG = Math.max(...matching.map((s) => s.weightGrams as number));
-      points.push({ label: formatDayShort(w.date), kg: kgFromGrams(maxG) });
-    }
-    return points;
-  }, [workouts, exercise]);
 
   const openNew = () => {
     setFormInitial(null);
@@ -157,20 +134,7 @@ export function TreinoView({
                 </CardTitle>
               </CardHeader>
               <CardContent className="pt-0">
-                {exercises.length === 0 ? (
-                  <p className="py-6 text-center text-sm text-muted-foreground">
-                    Adicione exercícios com carga pra acompanhar a evolução.
-                  </p>
-                ) : (
-                  <>
-                    <Select value={exercise} onChange={(e) => setSelectedEx(e.target.value)} className="mb-3">
-                      {exercises.map((ex) => (
-                        <option key={ex} value={ex}>{ex}</option>
-                      ))}
-                    </Select>
-                    <ProgressChart data={series} />
-                  </>
-                )}
+                <ProgressionCoach workouts={workouts} members={members} currentUserId={currentUserId} />
               </CardContent>
             </Card>
           </div>
@@ -184,6 +148,7 @@ export function TreinoView({
         currentUserId={currentUserId}
         defaultDate={today}
         initial={formInitial}
+        workouts={workouts}
       />
     </div>
   );

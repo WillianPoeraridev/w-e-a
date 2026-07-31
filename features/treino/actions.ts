@@ -65,6 +65,9 @@ async function insertSets(workoutId: string, exercises: ExerciseInput[]) {
       weightGrams: e.weightGrams,
       reps: e.reps,
       sets: e.sets,
+      targetRepsMin: e.targetRepsMin,
+      targetRepsMax: e.targetRepsMax,
+      rir: e.rir,
       sortOrder: i,
     })),
   );

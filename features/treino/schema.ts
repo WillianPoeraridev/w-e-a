@@ -16,6 +16,21 @@ export const exerciseSchema = z.object({
   sets: z.number().int().min(0).max(100).nullable(),
   reps: z.number().int().min(0).max(1000).nullable(),
   weightGrams: z.number().int().min(0).max(100_000_000).nullable(),
+  targetRepsMin: z.number().int().min(1).max(100).nullable(),
+  targetRepsMax: z.number().int().min(1).max(100).nullable(),
+  rir: z.number().int().min(0).max(10).nullable(),
+}).superRefine((exercise, ctx) => {
+  if (
+    exercise.targetRepsMin !== null &&
+    exercise.targetRepsMax !== null &&
+    exercise.targetRepsMin > exercise.targetRepsMax
+  ) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      path: ["targetRepsMax"],
+      message: "O máximo da faixa deve ser maior ou igual ao mínimo.",
+    });
+  }
 });
 export const exercisesSchema = z.array(exerciseSchema).max(60);
 export type ExerciseInput = z.infer<typeof exerciseSchema>;

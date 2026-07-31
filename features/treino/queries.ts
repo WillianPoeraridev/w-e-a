@@ -10,6 +10,9 @@ export type SetLite = {
   weightGrams: number | null;
   reps: number | null;
   sets: number | null;
+  targetRepsMin: number | null;
+  targetRepsMax: number | null;
+  rir: number | null;
 };
 
 export type WorkoutLite = {
@@ -55,6 +58,9 @@ async function _getWorkouts(
       weightGrams: s.weightGrams,
       reps: s.reps,
       sets: s.sets,
+      targetRepsMin: s.targetRepsMin,
+      targetRepsMax: s.targetRepsMax,
+      rir: s.rir,
     });
     byWorkout.set(s.workoutId, list);
   }

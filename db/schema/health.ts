@@ -42,6 +42,11 @@ export const workoutSets = pgTable("workout_sets", {
   weightGrams: integer("weight_grams"),
   reps: integer("reps"),
   sets: integer("sets"),
+  /** Target rep range used by the double-progression coach. */
+  targetRepsMin: integer("target_reps_min"),
+  targetRepsMax: integer("target_reps_max"),
+  /** Estimated repetitions in reserve on the final working set. */
+  rir: integer("rir"),
   sortOrder: integer("sort_order").notNull().default(0),
   ...timestamps,
 });
