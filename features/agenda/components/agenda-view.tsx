@@ -30,7 +30,7 @@ import {
   type CalendarItem,
   type CalendarSource,
 } from "@/features/calendar/types";
-import { addDaysKey, formatDayShort, monthKeyOf, shiftMonth } from "@/lib/dates";
+import { addDaysKey, formatDayShort, shiftMonth } from "@/lib/dates";
 import { formatBRL } from "@/lib/money";
 import { cn } from "@/lib/utils";
 import { deleteEvent } from "../actions";

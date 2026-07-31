@@ -46,7 +46,6 @@ export function RelacionamentoView({
   dateIdeas,
   importantDates,
   members,
-  currentUserId,
   today,
 }: {
   checkins: CheckinLite[];
@@ -54,7 +53,6 @@ export function RelacionamentoView({
   dateIdeas: DateIdeaLite[];
   importantDates: ImportantDateLite[];
   members: { userId: string; displayName: string; color: string }[];
-  currentUserId: string;
   today: string;
 }) {
   const router = useRouter();

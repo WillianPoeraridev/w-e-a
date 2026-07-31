@@ -125,8 +125,8 @@ export function EstudosView({
             <BookOpen className="size-7 text-primary" />
             <p className="font-medium">Crie sua primeira trilha</p>
             <p className="max-w-sm text-sm text-muted-foreground">
-              Um curso, um roadmap, um objetivo de estudo. Ex.: "Lógica de
-              programação" pra Angélica do zero, ou "System Design" pro Willian.
+              Um curso, um roadmap, um objetivo de estudo. Ex.: &quot;Lógica de
+              programação&quot; pra Angélica do zero, ou &quot;System Design&quot; pro Willian.
             </p>
             <Button size="sm" onClick={() => setTrackForm({ open: true, initial: null })} className="mt-1">
               <Plus /> Nova trilha

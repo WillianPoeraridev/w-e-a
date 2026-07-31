@@ -8,7 +8,6 @@ import {
   Plus,
   Sparkles,
   Target,
-  Trash2,
   X,
 } from "lucide-react";
 import { useRouter } from "next/navigation";

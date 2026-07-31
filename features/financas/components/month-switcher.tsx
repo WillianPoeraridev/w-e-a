@@ -25,7 +25,8 @@ export function MonthSwitcher({
 
   const viewed = parseMonthKey(month);
   const current = parseMonthKey(monthKeyOf());
-  const [year, setYear] = useState(viewed.year);
+  const [pickerYear, setPickerYear] = useState<number | null>(null);
+  const year = pickerYear ?? viewed.year;
 
   const goTo = (key: string) => {
     router.push(`/financas?m=${key}`);
@@ -35,11 +36,6 @@ export function MonthSwitcher({
   const step = (delta: number) => goTo(shiftMonth(month, delta));
   const pick = (month1: number) =>
     goTo(`${year}-${String(month1).padStart(2, "0")}`);
-
-  // Browse from the viewed month's year each time the picker opens.
-  useEffect(() => {
-    if (open) setYear(viewed.year);
-  }, [open, viewed.year]);
 
   // Close on outside click / Escape.
   useEffect(() => {
@@ -66,7 +62,10 @@ export function MonthSwitcher({
 
       <button
         type="button"
-        onClick={() => setOpen((v) => !v)}
+        onClick={() => {
+          if (!open) setPickerYear(null);
+          setOpen((value) => !value);
+        }}
         aria-haspopup="true"
         aria-expanded={open}
         className="inline-flex min-w-40 items-center justify-center gap-1.5 rounded-md px-2 py-2 text-sm font-medium tabular-nums transition-colors hover:bg-accent"
@@ -88,11 +87,11 @@ export function MonthSwitcher({
         <div className="absolute right-0 top-full z-40 mt-2 w-64 rounded-xl border bg-popover p-3 text-popover-foreground shadow-xl">
           {/* Year stepper */}
           <div className="mb-2 flex items-center justify-between">
-            <Button variant="ghost" size="icon" className="size-8" aria-label="Ano anterior" onClick={() => setYear((y) => y - 1)}>
+            <Button variant="ghost" size="icon" className="size-8" aria-label="Ano anterior" onClick={() => setPickerYear((value) => (value ?? viewed.year) - 1)}>
               <ChevronLeft className="size-4" />
             </Button>
             <span className="text-sm font-semibold tabular-nums">{year}</span>
-            <Button variant="ghost" size="icon" className="size-8" aria-label="Próximo ano" onClick={() => setYear((y) => y + 1)}>
+            <Button variant="ghost" size="icon" className="size-8" aria-label="Próximo ano" onClick={() => setPickerYear((value) => (value ?? viewed.year) + 1)}>
               <ChevronRight className="size-4" />
             </Button>
           </div>

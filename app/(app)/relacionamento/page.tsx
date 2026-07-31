@@ -37,7 +37,6 @@ export default async function RelacionamentoPage() {
         dateIdeas={dateIdeas}
         importantDates={importantDates}
         members={members}
-        currentUserId={ctx.userId}
         today={todaySP()}
       />
     </>
